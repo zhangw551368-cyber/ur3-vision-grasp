@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="calibration_file" default="$(env HOME)/.ros/easy_handeye/ur3_right_realsense_handeyecalibration_eye_on_base.yaml"/>
+
+  <include file="$(find dual_arm_tasks)/launch/publish_right_arm_camera_tf.launch">
+    <arg name="calibration_file" value="$(arg calibration_file)"/>
+  </include>
+  <include file="$(find dual_arm_tasks)/launch/red_object_detector.launch"/>
+  <include file="$(find dual_arm_tasks)/launch/transform_red_object.launch"/>
+  <node pkg="dual_arm_tasks"
+        type="red_object_marker.py"
+        name="red_object_marker"
+        output="screen"/>
+</launch>

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="timeout" default="8.0"/>
+  <arg name="skip_gripper" default="false"/>
+  <arg name="skip_moveit" default="false"/>
+
+  <group unless="$(arg skip_gripper)">
+    <group unless="$(arg skip_moveit)">
+      <node pkg="dual_arm_tasks" type="right_arm_pick_readiness.py"
+            name="right_arm_pick_readiness" output="screen"
+            args="--timeout $(arg timeout)"/>
+    </group>
+    <group if="$(arg skip_moveit)">
+      <node pkg="dual_arm_tasks" type="right_arm_pick_readiness.py"
+            name="right_arm_pick_readiness" output="screen"
+            args="--timeout $(arg timeout) --skip-moveit"/>
+    </group>
+  </group>
+
+  <group if="$(arg skip_gripper)">
+    <group unless="$(arg skip_moveit)">
+      <node pkg="dual_arm_tasks" type="right_arm_pick_readiness.py"
+            name="right_arm_pick_readiness" output="screen"
+            args="--timeout $(arg timeout) --skip-gripper"/>
+    </group>
+    <group if="$(arg skip_moveit)">
+      <node pkg="dual_arm_tasks" type="right_arm_pick_readiness.py"
+            name="right_arm_pick_readiness" output="screen"
+            args="--timeout $(arg timeout) --skip-gripper --skip-moveit"/>
+    </group>
+  </group>
+</launch>

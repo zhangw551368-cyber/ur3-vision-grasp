@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="config" default="$(find dual_arm_tasks)/config/right_arm_jacquard_click_pick.yaml"/>
+  <arg name="execute" default="false"/>
+  <arg name="yes" default="false"/>
+  <arg name="phase" default="full"/>
+  <arg name="auto_once" default="false"/>
+  <arg name="click_u" default="-1"/>
+  <arg name="click_v" default="-1"/>
+  <arg name="fixed_click_args" value="$(eval '' if int(arg('click_u')) &lt; 0 or int(arg('click_v')) &lt; 0 else ' --click-u %s --click-v %s' % (arg('click_u'), arg('click_v')))"/>
+
+  <group unless="$(arg execute)">
+    <node pkg="dual_arm_tasks"
+          type="right_arm_jacquard_click_pick.py"
+          name="right_arm_jacquard_click_pick"
+          output="screen"
+          args="$(eval ('--config %s --phase %s --auto-once' % (arg('config'), arg('phase')) if arg('auto_once') else '--config %s --phase %s' % (arg('config'), arg('phase'))) + arg('fixed_click_args'))"/>
+  </group>
+
+  <group if="$(arg execute)">
+    <group unless="$(arg yes)">
+      <node pkg="dual_arm_tasks"
+            type="right_arm_jacquard_click_pick.py"
+            name="right_arm_jacquard_click_pick"
+            output="screen"
+            args="$(eval ('--config %s --phase %s --execute --auto-once' % (arg('config'), arg('phase')) if arg('auto_once') else '--config %s --phase %s --execute' % (arg('config'), arg('phase'))) + arg('fixed_click_args'))"/>
+    </group>
+
+    <group if="$(arg yes)">
+      <node pkg="dual_arm_tasks"
+            type="right_arm_jacquard_click_pick.py"
+            name="right_arm_jacquard_click_pick"
+            output="screen"
+            args="$(eval ('--config %s --phase %s --execute --yes --auto-once' % (arg('config'), arg('phase')) if arg('auto_once') else '--config %s --phase %s --execute --yes' % (arg('config'), arg('phase'))) + arg('fixed_click_args'))"/>
+    </group>
+  </group>
+</launch>

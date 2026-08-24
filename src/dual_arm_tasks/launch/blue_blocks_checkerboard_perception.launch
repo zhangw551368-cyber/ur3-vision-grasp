@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Perception only: this launch cannot move either robot arm. -->
+  <arg name="config" default="$(find dual_arm_tasks)/config/blue_blocks_checkerboard_perception.yaml"/>
+  <arg name="show_window" default="true"/>
+
+  <node pkg="dual_arm_tasks"
+        type="blue_blocks_checkerboard_perception.py"
+        name="blue_blocks_checkerboard_perception"
+        output="screen">
+    <rosparam command="load" file="$(arg config)"/>
+    <param name="show_window" value="$(arg show_window)"/>
+  </node>
+</launch>

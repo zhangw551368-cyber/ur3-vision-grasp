@@ -1,0 +1,67 @@
+# First-pass eye-to-hand Kinect red-block grasp parameters.
+
+target_frame: right_arm_base
+color_topic: /kinect_0/kinect2/hd/image_color_rect
+depth_topic: /kinect_0/kinect2/hd/image_depth_rect
+camera_info_topic: /kinect_0/kinect2/hd/camera_info
+output_topic: /red_block/point_base_aux
+
+red_low_1: [0, 100, 50]
+red_high_1: [12, 255, 255]
+red_low_2: [168, 100, 50]
+red_high_2: [180, 255, 255]
+
+use_roi: false
+roi_x_min: 0
+roi_y_min: 0
+roi_x_max: 0
+roi_y_max: 0
+min_area_pixels: 1200
+max_area_pixels: 100000
+min_aspect_ratio: 0.2
+max_aspect_ratio: 4.0
+min_fill_ratio: 0.35
+depth_window_pixels: 11
+min_depth_m: 0.05
+max_depth_m: 2.50
+
+arm_group: right_arm
+planning_frame: right_arm_base
+robot_effector_frame: right_arm_tool0
+tcp_frame: right_arm_tcp
+fallback_tcp_frame: right_arm_tool0_controller
+tcp_offset_from_effector: [0.0, 0.0, 0.155]
+
+# Keep this equal to the known successful right-arm grasp posture until a
+# top-down TCP posture is deliberately tested.
+orientation_quaternion: [-0.5, 0.5, 0.5, 0.5]
+
+table_z: 0.0
+block_height: 0.03
+pre_grasp_height: 0.10
+lift_height: 0.12
+x_offset: 0.0
+y_offset: 0.0
+z_offset: 0.0
+
+target_sample_count: 5
+target_timeout: 8.0
+target_max_spread: 0.015
+pause_before_descent: 0.0
+
+velocity_scaling: 0.05
+acceleration_scaling: 0.05
+planning_time: 10.0
+num_planning_attempts: 10
+goal_position_tolerance: 0.01
+goal_orientation_tolerance: 0.08
+cartesian_step: 0.005
+cartesian_min_fraction: 0.995
+
+gripper_topic: /right_arm/Robotiq2FGripperRobotOutput
+robot_program_topic: /right_arm/ur_hardware_interface/robot_program_running
+open_position: 0
+close_position: 210
+gripper_speed: 80
+gripper_force: 80
+gripper_settle_seconds: 1.0

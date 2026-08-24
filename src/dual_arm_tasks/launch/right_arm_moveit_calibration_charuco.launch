@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- MoveIt Calibration hand-eye workflow for the right UR3 and external Kinect2. -->
+  <arg name="start_kinect2" default="true"/>
+  <arg name="start_robot" default="false"/>
+  <arg name="start_moveit" default="true"/>
+  <arg name="start_rviz" default="true"/>
+  <arg name="start_detection_view" default="true"/>
+  <arg name="start_left_arm" default="false"/>
+  <arg name="publish_static_left_arm" default="false"/>
+  <arg name="moveit_controller_manager" default="simple_right"/>
+  <arg name="rviz_start_delay" default="3.0"/>
+  <arg name="detection_view_start_delay" default="5.0"/>
+  <arg name="detection_view_topic" default="/handeye_calibration/target_detection"/>
+
+  <arg name="kinect_namespace" default="kinect_0"/>
+  <arg name="kinect_base_name" default="kinect2"/>
+  <arg name="kinect_base_name_tf" default="kinect2_0"/>
+  <arg name="kinect_sensor" default="226858434647"/>
+  <arg name="kinect_depth_method" default="cpu"/>
+
+  <arg name="rviz_config"
+       default="$(find dual_arm_tasks)/rviz/right_arm_moveit_calibration_charuco.rviz"/>
+
+  <group if="$(arg start_kinect2)" ns="$(arg kinect_namespace)">
+    <include file="$(find kinect2_bridge)/launch/kinect2_bridge.launch">
+      <arg name="base_name" value="$(arg kinect_base_name)"/>
+      <arg name="base_name_tf" value="$(arg kinect_base_name_tf)"/>
+      <arg name="sensor" value="$(arg kinect_sensor)"/>
+      <arg name="publish_tf" value="true"/>
+      <arg name="depth_method" value="$(arg kinect_depth_method)"/>
+      <arg name="use_nodelet" value="true"/>
+      <arg name="start_manager" value="true"/>
+      <arg name="nodelet_manager" value="$(arg kinect_base_name)"/>
+    </include>
+  </group>
+
+  <group if="$(arg start_robot)">
+    <include file="$(find ur_robot_driver)/launch/ur3_dual_bringup.launch">
+      <arg name="start_left_arm" value="$(arg start_left_arm)"/>
+      <arg name="start_right_arm" value="true"/>
+    </include>
+  </group>
+
+  <group if="$(arg publish_static_left_arm)">
+    <node pkg="dual_arm_tasks"
+          type="static_joint_state_publisher.py"
+          name="static_left_arm_joint_states_for_calibration"
+          output="screen">
+      <param name="prefix" value="left_arm_"/>
+      <param name="joint_state_topic" value="/left_arm/joint_states"/>
+    </node>
+  </group>
+
+  <group if="$(arg start_moveit)">
+    <include file="$(find ur3_dual_moveit_config)/launch/move_group.launch">
+      <arg name="load_robot_description" value="true"/>
+      <arg name="moveit_controller_manager" value="$(arg moveit_controller_manager)"/>
+    </include>
+  </group>
+
+  <group if="$(arg start_rviz)">
+    <node pkg="rviz"
+          type="rviz"
+          name="right_arm_moveit_calibration_rviz"
+          args="-d $(arg rviz_config)"
+          launch-prefix="bash -c 'sleep $(arg rviz_start_delay); exec &quot;$@&quot;' _"
+          output="screen"/>
+  </group>
+
+  <group if="$(arg start_detection_view)">
+    <node pkg="image_view"
+          type="image_view"
+          name="right_arm_charuco_detection_view"
+          args="image:=$(arg detection_view_topic)"
+          launch-prefix="bash -c 'sleep $(arg detection_view_start_delay); exec &quot;$@&quot;' _"
+          output="screen"/>
+  </group>
+</launch>

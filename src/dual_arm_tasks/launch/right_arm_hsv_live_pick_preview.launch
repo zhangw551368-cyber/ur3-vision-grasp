@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- This launch is intentionally PLAN ONLY.  It cannot execute the robot. -->
+  <arg name="live_config" default="$(find dual_arm_tasks)/config/right_arm_hsv_live_cube_20260821.yaml"/>
+  <arg name="stable_topic" default="/hsv_grasp/stable_object_point"/>
+  <arg name="support_plane_z" default="0.218227"/>
+
+  <include file="$(find dual_arm_tasks)/launch/right_arm_hsv_live_cube.launch">
+    <arg name="config" value="$(arg live_config)"/>
+    <arg name="stable_topic" value="$(arg stable_topic)"/>
+    <arg name="workspace_validation" value="true"/>
+    <arg name="snap_to_support_plane" value="true"/>
+  </include>
+
+  <include file="$(find dual_arm_tasks)/launch/right_arm_hsv_approach_test.launch">
+    <arg name="input_topic" value="$(arg stable_topic)"/>
+    <arg name="input_frame" value="base"/>
+    <arg name="planning_frame" value="base"/>
+    <arg name="grasp_stage" value="top_down_pick_preview"/>
+    <arg name="grasp_strategy" value="top_down"/>
+    <arg name="object_point_semantic" value="top_center"/>
+    <arg name="support_plane_z" value="$(arg support_plane_z)"/>
+    <arg name="snap_cube_to_support_plane_for_preview" value="false"/>
+    <arg name="use_raw_detected_object_z_for_preview" value="true"/>
+    <arg name="filter_window" value="7"/>
+    <arg name="plan_once" value="true"/>
+    <arg name="execute" value="false"/>
+    <arg name="confirm" value="false"/>
+    <arg name="gripper_execute" value="false"/>
+  </include>
+</launch>

@@ -1,0 +1,114 @@
+# Right-arm ArUco cube pick using camera2 as an eye-on-base sensor.
+# Default is safe plan-only. Execute only after checking the detected pose in RViz.
+
+enabled: true
+
+arm_group: right_arm
+planning_frame: right_arm_base
+end_effector_link: right_arm_tool0
+
+pose_target_is_tcp: true
+tcp_offset_from_end_effector: [0.0, 0.0, 0.155]
+use_joint_targets_from_ik: true
+ik_timeout: 1.0
+avoid_collisions: true
+
+gripper_mode: robotiq_topic
+gripper_topic: /right_arm/Robotiq2FGripperRobotOutput
+open_position: 0
+close_position: 255
+gripper_speed: 40
+gripper_force: 45
+gripper_settle_seconds: 1.0
+
+velocity_scaling: 0.010
+acceleration_scaling: 0.010
+planning_time: 20.0
+orientation_rpy: [-3.1416, 0.0, -1.5708]
+max_joint_delta_before_execute: 1.600
+max_wrist_joint_delta_before_execute: 0.600
+min_end_effector_z_before_execute: 0.350
+
+robot_program_topic: /right_arm/ur_hardware_interface/robot_program_running
+
+visual_aruco:
+  use_opencv_detection: false
+  marker_id: 0
+  aruco_dictionary: DICT_4X4_50
+  image_topic: /camera2/color/image_raw
+  depth_topic: /camera2/aligned_depth_to_color/image_raw
+  camera_info_topic: /camera2/color/camera_info_calibrated
+  camera_frame: camera2_color_optical_frame
+  base_frame: right_arm_base
+  aruco_pose_topic: /camera2_aruco_cube/center_pose_base
+  detected_pose_topic: /camera2_aruco_cube/grasp_center_pose_base
+  use_frozen_pose: false
+  frozen_center_base: null
+  visual_compensation_mode: absolute_offset
+  aruco_to_grasp_offset: [0.0, 0.0, 0.0]
+
+  # Sample the static cube center once at the start of each run while camera2 is unobstructed.
+  # The sampled pose is then used as the fixed target for that run.
+  # The localization node publishes the 55 mm cube center in right_arm_base.
+  # Marker metadata is kept here for reference and for the separate localization launch.
+  object_size: [0.055, 0.055, 0.055]
+  marker_to_object_center: [0.0, 0.0, -0.0275]
+
+  pre_grasp_lift: 0.120
+  lift_height: 0.120
+  geometry_approach_vector: [0.0, 0.0, 0.120]
+  geometry_lift_vector: [0.0, 0.0, 0.120]
+  geometry_orientation_source: grasp
+  aruco_sample_count: 8
+  aruco_pose_timeout: 20.0
+  target_max_spread: 0.006
+  detection_scale: 2.0
+  depth_window: 11
+  min_depth: 0.05
+  max_depth: 1.50
+require_grasp_detection: true
+stop_after_lift: true
+gripper_status_topic: /right_arm/Robotiq2FGripperRobotInput
+
+poses:
+  home:
+    translation: [-0.298, 0.191, 0.541]
+    quaternion: [-0.037, 0.378, 0.605, 0.700]
+    rpy_radian: [0.518, 0.611, 1.592]
+    rpy_degree: [29.679, 35.026, 91.216]
+
+  pre_grasp:
+    translation: [-0.041, 0.517, 0.145]
+    quaternion: [-0.167, 0.343, 0.379, 0.843]
+    rpy_radian: [-0.030, 0.783, 0.832]
+    rpy_degree: [-1.730, 44.837, 47.665]
+
+  grasp:
+    translation: [0.011, 0.561, 0.211]
+    quaternion: [-0.151, 0.335, 0.309, 0.877]
+    rpy_radian: [-0.079, 0.749, 0.647]
+    rpy_degree: [-4.510, 42.895, 37.089]
+
+  lift:
+    translation: [-0.031, 0.529, 0.144]
+    quaternion: [-0.145, 0.375, 0.376, 0.835]
+    rpy_radian: [0.061, 0.826, 0.874]
+    rpy_degree: [3.468, 47.317, 50.062]
+
+  pre_place:
+    translation: [-0.160, 0.385, 0.340]
+    quaternion: [-0.143, 0.361, 0.369, 0.844]
+    rpy_radian: [0.036, 0.798, 0.838]
+    rpy_degree: [2.065, 45.705, 48.042]
+
+  place:
+    translation: [-0.123, 0.418, 0.384]
+    quaternion: [-0.173, 0.378, 0.315, 0.853]
+    rpy_radian: [-0.087, 0.853, 0.668]
+    rpy_degree: [-4.974, 48.880, 38.296]
+
+  retreat:
+    translation: [-0.298, 0.191, 0.541]
+    quaternion: [-0.037, 0.378, 0.605, 0.700]
+    rpy_radian: [0.518, 0.611, 1.592]
+    rpy_degree: [29.679, 35.026, 91.216]

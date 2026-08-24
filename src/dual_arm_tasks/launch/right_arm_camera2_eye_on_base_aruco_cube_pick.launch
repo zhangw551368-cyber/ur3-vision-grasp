@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Camera2 eye-on-base ArUco cube pick.
+       Defaults to plan-only. Set execute:=true yes:=true only after verifying pose.
+  -->
+  <arg name="config" default="$(find dual_arm_tasks)/config/right_arm_camera2_eye_on_base_aruco_cube_pick.yaml"/>
+  <arg name="execute" default="false"/>
+  <arg name="yes" default="false"/>
+
+  <arg name="start_cameras" default="false"/>
+  <arg name="start_moveit" default="true"/>
+  <arg name="start_handeye_tf" default="true"/>
+  <arg name="start_camera_info" default="true"/>
+  <arg name="run_pick_node" default="true"/>
+  <arg name="moveit_controller_manager" default="simple_right"/>
+  <arg name="skip_initial_home" default="false"/>
+
+  <arg name="camera2_info_yaml"
+       default="/home/gzu/gzu_ws/calibration/realsense_intrinsics/camera_912112073732_20260611_135007/ost.yaml"/>
+  <arg name="camera2_image_topic" default="/camera2/color/image_raw"/>
+  <arg name="camera2_depth_topic" default="/camera2/aligned_depth_to_color/image_raw"/>
+  <arg name="camera2_raw_info_topic" default="/camera2/color/camera_info"/>
+  <arg name="camera2_calibrated_info_topic" default="/camera2/color/camera_info_calibrated"/>
+  <arg name="camera2_frame" default="camera2_color_optical_frame"/>
+
+  <arg name="marker_id" default="0"/>
+  <arg name="aruco_dictionary" default="DICT_4X4_50"/>
+  <arg name="aruco_pose_topic" default="/camera2_aruco_cube/center_pose_base"/>
+  <arg name="detected_pose_topic" default="/camera2_aruco_cube/grasp_center_pose_base"/>
+
+  <group if="$(arg start_cameras)">
+    <include file="$(find dual_arm_tasks)/launch/dual_realsense_cameras.launch"/>
+  </group>
+
+  <group if="$(arg start_moveit)">
+    <include file="$(find ur3_dual_moveit_config)/launch/move_group.launch">
+      <arg name="moveit_controller_manager" value="$(arg moveit_controller_manager)"/>
+    </include>
+  </group>
+
+  <group if="$(arg start_handeye_tf)">
+    <include file="$(find dual_arm_tasks)/launch/right_arm_camera2_eye_on_base_tf.launch"/>
+  </group>
+
+  <group if="$(arg start_camera_info)">
+    <node pkg="dual_arm_tasks"
+          type="camera_info_from_yaml_publisher.py"
+          name="camera2_calibrated_camera_info"
+          output="screen">
+      <param name="camera_info_yaml" value="$(arg camera2_info_yaml)"/>
+      <param name="source_camera_info_topic" value="$(arg camera2_raw_info_topic)"/>
+      <param name="output_camera_info_topic" value="$(arg camera2_calibrated_info_topic)"/>
+      <param name="frame_id" value="$(arg camera2_frame)"/>
+    </node>
+  </group>
+
+  <group if="$(arg run_pick_node)">
+    <group unless="$(arg execute)">
+      <node pkg="dual_arm_tasks"
+            type="visual_aruco_pick_place.py"
+            name="right_arm_camera2_eye_on_base_aruco_cube_pick"
+            output="screen"
+            args="--config $(arg config)
+                  --aruco-pose-topic $(arg aruco_pose_topic)
+                  --marker-id $(arg marker_id)
+                  --aruco-dictionary $(arg aruco_dictionary)
+                  --image-topic $(arg camera2_image_topic)
+                  --depth-topic $(arg camera2_depth_topic)
+                  --camera-info-topic $(arg camera2_calibrated_info_topic)
+                  --camera-frame $(arg camera2_frame)
+                  --base-frame right_arm_base
+                  --detected-pose-topic $(arg detected_pose_topic)
+                  --skip-initial-home $(arg skip_initial_home)"/>
+    </group>
+
+    <group if="$(arg execute)">
+      <group unless="$(arg yes)">
+        <node pkg="dual_arm_tasks"
+              type="visual_aruco_pick_place.py"
+              name="right_arm_camera2_eye_on_base_aruco_cube_pick"
+              output="screen"
+              args="--config $(arg config)
+                    --aruco-pose-topic $(arg aruco_pose_topic)
+                    --marker-id $(arg marker_id)
+                    --aruco-dictionary $(arg aruco_dictionary)
+                    --image-topic $(arg camera2_image_topic)
+                    --depth-topic $(arg camera2_depth_topic)
+                    --camera-info-topic $(arg camera2_calibrated_info_topic)
+                    --camera-frame $(arg camera2_frame)
+                    --base-frame right_arm_base
+                    --detected-pose-topic $(arg detected_pose_topic)
+                    --skip-initial-home $(arg skip_initial_home)
+                    --execute"/>
+      </group>
+
+      <group if="$(arg yes)">
+        <node pkg="dual_arm_tasks"
+              type="visual_aruco_pick_place.py"
+              name="right_arm_camera2_eye_on_base_aruco_cube_pick"
+              output="screen"
+              args="--config $(arg config)
+                    --aruco-pose-topic $(arg aruco_pose_topic)
+                    --marker-id $(arg marker_id)
+                    --aruco-dictionary $(arg aruco_dictionary)
+                    --image-topic $(arg camera2_image_topic)
+                    --depth-topic $(arg camera2_depth_topic)
+                    --camera-info-topic $(arg camera2_calibrated_info_topic)
+                    --camera-frame $(arg camera2_frame)
+                    --base-frame right_arm_base
+                    --detected-pose-topic $(arg detected_pose_topic)
+                    --skip-initial-home $(arg skip_initial_home)
+                    --execute --yes"/>
+      </group>
+    </group>
+  </group>
+</launch>

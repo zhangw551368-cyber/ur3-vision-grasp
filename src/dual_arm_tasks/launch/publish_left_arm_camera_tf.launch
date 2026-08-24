@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="calibration_file" default="$(env HOME)/.ros/easy_handeye/ur3_left_realsense_handeyecalibration_eye_on_base.yaml"/>
+  <arg name="robot_base_frame" default="base"/>
+  <arg name="camera_link_frame" default="camera_link"/>
+  <arg name="camera_optical_frame" default="camera_color_optical_frame"/>
+
+  <node pkg="dual_arm_tasks" type="publish_camera_link_tf.py" name="publish_left_arm_camera_tf" output="screen">
+    <param name="calibration_file" value="$(arg calibration_file)"/>
+    <param name="robot_base_frame" value="$(arg robot_base_frame)"/>
+    <param name="camera_link_frame" value="$(arg camera_link_frame)"/>
+    <param name="camera_optical_frame" value="$(arg camera_optical_frame)"/>
+  </node>
+</launch>

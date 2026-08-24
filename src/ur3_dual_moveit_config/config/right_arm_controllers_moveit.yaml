@@ -1,0 +1,11 @@
+controller_list:
+- name: "right_arm/scaled_pos_joint_traj_controller"
+  action_ns: follow_joint_trajectory
+  type: FollowJointTrajectory
+  joints:
+    - right_arm_shoulder_pan_joint
+    - right_arm_shoulder_lift_joint
+    - right_arm_elbow_joint
+    - right_arm_wrist_1_joint
+    - right_arm_wrist_2_joint
+    - right_arm_wrist_3_joint

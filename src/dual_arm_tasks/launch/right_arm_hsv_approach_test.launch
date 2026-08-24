@@ -1,0 +1,205 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="input_topic" default="/hsv_grasp/object_point_base"/>
+  <arg name="input_frame" default="right_arm_base"/>
+  <arg name="planning_frame" default="base"/>
+  <arg name="group_name" default="right_arm"/>
+  <arg name="end_effector_link" default="right_arm_tool0"/>
+  <arg name="planning_mode" default="position_only"/>
+  <arg name="z_offset_frame" default="planning_frame"/>
+  <arg name="grasp_stage" default="local_pick_place_preview"/>
+  <arg name="grasp_strategy" default="side_x_neg"/>
+  <arg name="approach_distance" default="0.08"/>
+  <arg name="pregrasp_distance" default="0.08"/>
+  <arg name="final_approach_distance" default="0.04"/>
+  <arg name="object_point_semantic" default="top_center"/>
+  <arg name="pregrasp_clearance" default="0.10"/>
+  <arg name="final_clearance" default="0.08"/>
+  <arg name="grasp_clearance" default="0.025"/>
+  <arg name="lift_height" default="0.10"/>
+  <arg name="local_lift_height" default="0.06"/>
+  <arg name="place_offset_x" default="0.0"/>
+  <arg name="place_offset_y" default="0.20"/>
+  <arg name="place_offset_z" default="0.0"/>
+  <arg name="retreat_distance" default="0.08"/>
+  <arg name="local_retreat_distance" default="0.04"/>
+  <arg name="local_place_radius" default="0.05"/>
+  <arg name="local_place_offset" default="0.035"/>
+  <arg name="local_max_candidates" default="20"/>
+  <arg name="local_max_joint_motion" default="6.0"/>
+  <arg name="top_down_hover_height" default="0.20"/>
+  <arg name="top_down_lift_height" default="0.12"/>
+  <arg name="top_down_place_offset_x" default="0.0"/>
+  <arg name="top_down_place_offset_y" default="0.08"/>
+  <arg name="top_down_place_max_distance" default="0.10"/>
+  <arg name="top_down_min_cartesian_fraction" default="0.995"/>
+  <arg name="top_down_max_joint_motion" default="6.0"/>
+  <!-- Keep the gripper finger-opening axis close to horizontal so that both
+       fingertips reach the cube sides at nearly the same height. -->
+  <arg name="top_down_max_finger_axis_vertical" default="1.0"/>
+  <arg name="top_down_max_tilt_deg" default="40.0"/>
+  <arg name="top_down_min_tilt_deg" default="0.0"/>
+  <arg name="approach_height" default="0.10"/>
+  <arg name="cube_size" default="0.055"/>
+  <arg name="safe_min_z" default="0.18"/>
+  <arg name="snap_cube_to_support_plane_for_preview" default="false"/>
+  <arg name="use_raw_detected_object_z_for_preview" default="true"/>
+  <!-- Current tabletop estimate in base frame from HSV top-face depth samples. -->
+  <arg name="support_plane_z" default="0.17"/>
+  <arg name="cartesian_step" default="0.005"/>
+  <arg name="jump_threshold" default="0.0"/>
+  <arg name="min_cartesian_fraction" default="0.95"/>
+  <arg name="side_approach_cartesian_step" default="0.005"/>
+  <arg name="side_approach_jump_threshold" default="0.0"/>
+  <arg name="side_approach_min_fraction" default="0.95"/>
+  <arg name="execute_delay" default="0.0"/>
+  <arg name="object_to_grasp_offset_x" default="0.0"/>
+  <arg name="object_to_grasp_offset_y" default="0.0"/>
+  <arg name="object_to_grasp_offset_z" default="0.0"/>
+  <arg name="object_z_check_enabled" default="true"/>
+  <arg name="enable_z_clamp" default="true"/>
+  <arg name="clamp_grasp_points_for_preview" default="true"/>
+  <arg name="clamp_grasp_points_for_execution" default="true"/>
+  <arg name="allow_low_grasp_execution" default="false"/>
+  <arg name="object_min_z" default="-10.0"/>
+  <arg name="object_max_z" default="10.0"/>
+  <arg name="auto_marker_topic" default="/hsv_grasp/grasp_debug_markers"/>
+  <arg name="auto_marker_scale" default="0.025"/>
+  <arg name="object_preview_marker_topic" default="/hsv_grasp/right_arm_debug_object_marker"/>
+  <arg name="suggested_object_marker_enabled" default="false"/>
+  <arg name="suggested_object_marker_topic" default="/hsv_grasp/right_arm_suggested_object_marker"/>
+  <arg name="suggested_object_use_selected_place" default="true"/>
+  <arg name="suggested_object_verify_plan" default="true"/>
+  <arg name="suggested_object_max_candidates" default="4"/>
+  <arg name="suggested_object_offset_x" default="0.035"/>
+  <arg name="suggested_object_offset_y" default="0.0"/>
+  <arg name="suggested_object_offset_z" default="0.0"/>
+  <arg name="tcp_offset_enabled" default="true"/>
+  <arg name="tool0_to_grasp_center_offset_x" default="0.0"/>
+  <arg name="tool0_to_grasp_center_offset_y" default="0.0"/>
+  <arg name="tool0_to_grasp_center_offset_z" default="0.13"/>
+  <arg name="filter_window" default="7"/>
+  <arg name="max_input_age" default="0.8"/>
+  <arg name="sample_reset_timeout" default="0.8"/>
+  <arg name="orientation_mode" default="auto_side"/>
+  <arg name="fixed_orientation_quaternion" default="[-0.5, 0.5, 0.5, 0.5]"/>
+  <arg name="fixed_side_orientation_quaternion" default="[-0.5, 0.5, 0.5, 0.5]"/>
+  <arg name="execute" default="false"/>
+  <arg name="confirm" default="false"/>
+  <arg name="gripper_preview_enabled" default="true"/>
+  <arg name="gripper_execute" default="false"/>
+  <arg name="allow_full_pick_place_preview" default="false"/>
+  <arg name="gripper_open_position" default="0.085"/>
+  <arg name="gripper_close_position" default="0.025"/>
+  <arg name="attach_object_preview" default="false"/>
+  <arg name="plan_once" default="true"/>
+  <arg name="plan_period" default="2.0"/>
+  <arg name="velocity_scaling" default="0.10"/>
+  <arg name="acceleration_scaling" default="0.10"/>
+  <arg name="planning_time" default="10.0"/>
+  <arg name="num_planning_attempts" default="20"/>
+  <arg name="goal_position_tolerance" default="0.02"/>
+  <arg name="goal_orientation_tolerance" default="0.10"/>
+  <arg name="tf_timeout" default="0.5"/>
+
+  <node pkg="dual_arm_tasks" type="right_arm_hsv_approach_test.py" name="right_arm_hsv_approach_test" output="screen">
+    <param name="input_topic" value="$(arg input_topic)"/>
+    <param name="input_frame" value="$(arg input_frame)"/>
+    <param name="planning_frame" value="$(arg planning_frame)"/>
+    <param name="group_name" value="$(arg group_name)"/>
+    <param name="end_effector_link" value="$(arg end_effector_link)"/>
+    <param name="planning_mode" value="$(arg planning_mode)"/>
+    <param name="z_offset_frame" value="$(arg z_offset_frame)"/>
+    <param name="grasp_stage" value="$(arg grasp_stage)"/>
+    <param name="grasp_strategy" value="$(arg grasp_strategy)"/>
+    <param name="approach_distance" value="$(arg approach_distance)"/>
+    <param name="pregrasp_distance" value="$(arg pregrasp_distance)"/>
+    <param name="final_approach_distance" value="$(arg final_approach_distance)"/>
+    <param name="object_point_semantic" value="$(arg object_point_semantic)"/>
+    <param name="pregrasp_clearance" value="$(arg pregrasp_clearance)"/>
+    <param name="final_clearance" value="$(arg final_clearance)"/>
+    <param name="grasp_clearance" value="$(arg grasp_clearance)"/>
+    <param name="lift_height" value="$(arg lift_height)"/>
+    <param name="local_lift_height" value="$(arg local_lift_height)"/>
+    <param name="place_offset_x" value="$(arg place_offset_x)"/>
+    <param name="place_offset_y" value="$(arg place_offset_y)"/>
+    <param name="place_offset_z" value="$(arg place_offset_z)"/>
+    <param name="retreat_distance" value="$(arg retreat_distance)"/>
+    <param name="local_retreat_distance" value="$(arg local_retreat_distance)"/>
+    <param name="local_place_radius" value="$(arg local_place_radius)"/>
+    <param name="local_place_offset" value="$(arg local_place_offset)"/>
+    <param name="local_max_candidates" value="$(arg local_max_candidates)"/>
+    <param name="local_max_joint_motion" value="$(arg local_max_joint_motion)"/>
+    <param name="top_down_hover_height" value="$(arg top_down_hover_height)"/>
+    <param name="top_down_lift_height" value="$(arg top_down_lift_height)"/>
+    <param name="top_down_place_offset_x" value="$(arg top_down_place_offset_x)"/>
+    <param name="top_down_place_offset_y" value="$(arg top_down_place_offset_y)"/>
+    <param name="top_down_place_max_distance" value="$(arg top_down_place_max_distance)"/>
+    <param name="top_down_min_cartesian_fraction" value="$(arg top_down_min_cartesian_fraction)"/>
+    <param name="top_down_max_joint_motion" value="$(arg top_down_max_joint_motion)"/>
+    <param name="top_down_max_finger_axis_vertical" value="$(arg top_down_max_finger_axis_vertical)"/>
+    <param name="top_down_max_tilt_deg" value="$(arg top_down_max_tilt_deg)"/>
+    <param name="top_down_min_tilt_deg" value="$(arg top_down_min_tilt_deg)"/>
+    <param name="approach_height" value="$(arg approach_height)"/>
+    <param name="cube_size" value="$(arg cube_size)"/>
+    <param name="safe_min_z" value="$(arg safe_min_z)"/>
+    <param name="snap_cube_to_support_plane_for_preview" value="$(arg snap_cube_to_support_plane_for_preview)"/>
+    <param name="use_raw_detected_object_z_for_preview" value="$(arg use_raw_detected_object_z_for_preview)"/>
+    <param name="support_plane_z" value="$(arg support_plane_z)"/>
+    <param name="cartesian_step" value="$(arg cartesian_step)"/>
+    <param name="jump_threshold" value="$(arg jump_threshold)"/>
+    <param name="min_cartesian_fraction" value="$(arg min_cartesian_fraction)"/>
+    <param name="side_approach_cartesian_step" value="$(arg side_approach_cartesian_step)"/>
+    <param name="side_approach_jump_threshold" value="$(arg side_approach_jump_threshold)"/>
+    <param name="side_approach_min_fraction" value="$(arg side_approach_min_fraction)"/>
+    <param name="execute_delay" value="$(arg execute_delay)"/>
+    <param name="object_to_grasp_offset_x" value="$(arg object_to_grasp_offset_x)"/>
+    <param name="object_to_grasp_offset_y" value="$(arg object_to_grasp_offset_y)"/>
+    <param name="object_to_grasp_offset_z" value="$(arg object_to_grasp_offset_z)"/>
+    <param name="object_z_check_enabled" value="$(arg object_z_check_enabled)"/>
+    <param name="enable_z_clamp" value="$(arg enable_z_clamp)"/>
+    <param name="clamp_grasp_points_for_preview" value="$(arg clamp_grasp_points_for_preview)"/>
+    <param name="clamp_grasp_points_for_execution" value="$(arg clamp_grasp_points_for_execution)"/>
+    <param name="allow_low_grasp_execution" value="$(arg allow_low_grasp_execution)"/>
+    <param name="object_min_z" value="$(arg object_min_z)"/>
+    <param name="object_max_z" value="$(arg object_max_z)"/>
+    <param name="auto_marker_topic" value="$(arg auto_marker_topic)"/>
+    <param name="auto_marker_scale" value="$(arg auto_marker_scale)"/>
+    <param name="object_preview_marker_topic" value="$(arg object_preview_marker_topic)"/>
+    <param name="suggested_object_marker_enabled" value="$(arg suggested_object_marker_enabled)"/>
+    <param name="suggested_object_marker_topic" value="$(arg suggested_object_marker_topic)"/>
+    <param name="suggested_object_use_selected_place" value="$(arg suggested_object_use_selected_place)"/>
+    <param name="suggested_object_verify_plan" value="$(arg suggested_object_verify_plan)"/>
+    <param name="suggested_object_max_candidates" value="$(arg suggested_object_max_candidates)"/>
+    <param name="suggested_object_offset_x" value="$(arg suggested_object_offset_x)"/>
+    <param name="suggested_object_offset_y" value="$(arg suggested_object_offset_y)"/>
+    <param name="suggested_object_offset_z" value="$(arg suggested_object_offset_z)"/>
+    <param name="tcp_offset_enabled" value="$(arg tcp_offset_enabled)"/>
+    <param name="tool0_to_grasp_center_offset_x" value="$(arg tool0_to_grasp_center_offset_x)"/>
+    <param name="tool0_to_grasp_center_offset_y" value="$(arg tool0_to_grasp_center_offset_y)"/>
+    <param name="tool0_to_grasp_center_offset_z" value="$(arg tool0_to_grasp_center_offset_z)"/>
+    <param name="filter_window" value="$(arg filter_window)"/>
+    <param name="max_input_age" value="$(arg max_input_age)"/>
+    <param name="sample_reset_timeout" value="$(arg sample_reset_timeout)"/>
+    <param name="orientation_mode" value="$(arg orientation_mode)"/>
+    <rosparam param="fixed_orientation_quaternion" subst_value="true">$(arg fixed_orientation_quaternion)</rosparam>
+    <rosparam param="fixed_side_orientation_quaternion" subst_value="true">$(arg fixed_side_orientation_quaternion)</rosparam>
+    <param name="execute" value="$(arg execute)"/>
+    <param name="confirm" value="$(arg confirm)"/>
+    <param name="gripper_preview_enabled" value="$(arg gripper_preview_enabled)"/>
+    <param name="gripper_execute" value="$(arg gripper_execute)"/>
+    <param name="allow_full_pick_place_preview" value="$(arg allow_full_pick_place_preview)"/>
+    <param name="gripper_open_position" value="$(arg gripper_open_position)"/>
+    <param name="gripper_close_position" value="$(arg gripper_close_position)"/>
+    <param name="attach_object_preview" value="$(arg attach_object_preview)"/>
+    <param name="plan_once" value="$(arg plan_once)"/>
+    <param name="plan_period" value="$(arg plan_period)"/>
+    <param name="velocity_scaling" value="$(arg velocity_scaling)"/>
+    <param name="acceleration_scaling" value="$(arg acceleration_scaling)"/>
+    <param name="planning_time" value="$(arg planning_time)"/>
+    <param name="num_planning_attempts" value="$(arg num_planning_attempts)"/>
+    <param name="goal_position_tolerance" value="$(arg goal_position_tolerance)"/>
+    <param name="goal_orientation_tolerance" value="$(arg goal_orientation_tolerance)"/>
+    <param name="tf_timeout" value="$(arg tf_timeout)"/>
+  </node>
+</launch>

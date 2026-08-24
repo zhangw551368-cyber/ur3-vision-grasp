@@ -1,0 +1,42 @@
+# Catkin generated files
+/build/
+/devel/
+/install/
+/logs/
+.catkin_tools/
+/src/CMakeLists.txt
+
+# ROS runtime data
+.ros/
+*.bag
+*.bag.active
+roslaunch-*.log
+
+# Python/editor caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.vscode/
+.idea/
+*~
+
+# Large recordings and generated datasets
+video/
+videos/
+datasets/
+captures/
+*.mp4
+*.avi
+*.mkv
+*.zip
+*.tar
+*.tar.gz
+
+# Credentials and local overrides
+.env
+.env.*
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+config/local_*.yaml

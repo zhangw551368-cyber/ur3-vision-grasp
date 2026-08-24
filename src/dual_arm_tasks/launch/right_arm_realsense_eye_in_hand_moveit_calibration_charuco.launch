@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- MoveIt Calibration hand-eye workflow for the right UR3 and wrist-mounted RealSense. -->
+  <arg name="start_robot" default="false"/>
+  <arg name="start_realsense" default="false"/>
+  <arg name="start_moveit" default="true"/>
+  <arg name="start_rviz" default="true"/>
+  <arg name="start_detection_view" default="true"/>
+  <arg name="moveit_controller_manager" default="simple_right"/>
+  <arg name="rviz_start_delay" default="3.0"/>
+  <arg name="detection_view_start_delay" default="5.0"/>
+  <arg name="detection_view_topic" default="/handeye_calibration/target_detection"/>
+
+  <arg name="rviz_config"
+       default="$(find dual_arm_tasks)/rviz/right_arm_realsense_eye_in_hand_charuco.rviz"/>
+
+  <group if="$(arg start_robot)">
+    <include file="$(find ur_robot_driver)/launch/ur3_dual_bringup.launch"/>
+  </group>
+
+  <group if="$(arg start_realsense)">
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch"/>
+  </group>
+
+  <group if="$(arg start_moveit)">
+    <include file="$(find ur3_dual_moveit_config)/launch/move_group.launch">
+      <arg name="load_robot_description" value="true"/>
+      <arg name="moveit_controller_manager" value="$(arg moveit_controller_manager)"/>
+    </include>
+  </group>
+
+  <group if="$(arg start_rviz)">
+    <node pkg="rviz"
+          type="rviz"
+          name="right_arm_realsense_eye_in_hand_calibration_rviz"
+          args="-d $(arg rviz_config)"
+          launch-prefix="bash -c 'sleep $(arg rviz_start_delay); exec &quot;$@&quot;' _"
+          output="screen"/>
+  </group>
+
+  <group if="$(arg start_detection_view)">
+    <node pkg="image_view"
+          type="image_view"
+          name="right_arm_realsense_charuco_detection_view"
+          args="image:=$(arg detection_view_topic)"
+          launch-prefix="bash -c 'sleep $(arg detection_view_start_delay); exec &quot;$@&quot;' _"
+          output="screen"/>
+  </group>
+</launch>

@@ -1,0 +1,96 @@
+# Dual-arm workcell collision geometry updated from the 2026-08-22 measurements.
+# Units: metres and radians. Pose order: [x, y, z, roll, pitch, yaw].
+#
+# Coordinate convention (confirmed in the 2026-08-21 measurement sheet):
+#   +Y points from the right-arm side to the left-arm side;
+#   +X is 90 degrees clockwise from +Y in the top view;
+#   +Z points upward.
+#
+# This file deliberately keeps the 2026-08-21 scene_id. The publisher first
+# removes every object with this prefix, so launching today's scene replaces
+# yesterday's cabinet and wooden table instead of leaving stale collision boxes.
+
+scene_id: right_arm_lab_20260821
+frame_id: base
+require_measured: true
+dry_run: false
+remove_only: false
+scene_timeout: 8.0
+
+objects:
+  # 2026-08-21 measured cabinet, extended 1.500 m toward the robot's right
+  # (-Y). The original +Y, X and Z faces are unchanged.
+  #   old y bounds = [-0.2330, +1.0270]
+  #   new y bounds = [-1.7330, +1.0270]
+  #   x bounds     = [-0.8275, +0.1525]
+  #   z bounds     = [-0.8050, -0.0100]
+  - name: support_cabinet
+    type: box
+    enabled: true
+    measured: true
+    pose: [-0.3375, -0.3530, -0.4075, 0.0, 0.0, 0.0]
+    size: [0.9800, 2.7600, 0.7950]
+    color: [0.20, 0.42, 0.72, 1.00]
+    note: "2026-08-21 measured cabinet plus 1.500 m extension toward base -Y; top remains z=-0.010 m."
+
+  # Replacement 1200 x 900 mm work surface with green cloth.
+  # The two perpendicular distances across the 900 mm width give:
+  #   x bounds = [-0.1000, +0.8000]
+  # The near end is aligned with the base origin and the long side extends
+  # toward the right arm (-Y):
+  #   y bounds = [-1.2000, 0.0000]
+  # The cabinet top is z=-0.010 m and the covered table surface is 45 mm lower,
+  # therefore the support surface is z=-0.055 m.
+  #
+  # A 20 mm downward-only slab is used as the PlanningScene surface proxy. It
+  # does not assert that the physical tabletop is 20 mm thick. The green colour
+  # represents the cloth without adding an invented cloth thickness above the
+  # measured support height.
+  - name: green_cloth_work_surface
+    type: box
+    enabled: true
+    measured: true
+    pose: [0.3500, -0.6000, -0.0650, 0.0, 0.0, 0.0]
+    size: [0.9000, 1.2000, 0.0200]
+    color: [0.04, 0.62, 0.12, 1.00]
+    note: "Green-covered 1200 x 900 mm support surface; top z=-0.055 m; X bounds are -0.100/+0.800 m."
+
+  # Size reference only. Runtime perception must provide x/y before enabling.
+  - name: detected_cube_reference
+    type: box
+    enabled: false
+    measured: true
+    pose: [0.0, 0.0, -0.0275, 0.0, 0.0, 0.0]
+    size: [0.0550, 0.0550, 0.0550]
+    color: [0.05, 0.35, 1.00, 0.90]
+    note: "Measured cube size only; disabled until a validated runtime pose is supplied."
+
+  # The new table legs/frame and soft cables remain disabled until their
+  # physical bounds are measured. Do not plan trajectories underneath the
+  # tabletop using this surface-only model.
+  - name: replacement_table_underbody_keepout
+    type: box
+    enabled: false
+    measured: false
+    pose: [0.3500, -0.6000, -0.4300, 0.0, 0.0, 0.0]
+    size: [0.9000, 1.2000, 0.7300]
+    color: [0.90, 0.15, 0.15, 0.30]
+    note: "Disabled placeholder: measure the replacement table legs/frame before any under-table planning."
+
+  - name: camera_stand_keepout
+    type: box
+    enabled: false
+    measured: false
+    pose: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    size: [0.10, 0.10, 0.10]
+    color: [0.12, 0.12, 0.12, 1.00]
+    note: "TODO measure the fixed camera stand/base/boom."
+
+  - name: cable_keepout
+    type: box
+    enabled: false
+    measured: false
+    pose: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    size: [0.10, 0.10, 0.10]
+    color: [0.90, 0.15, 0.15, 0.45]
+    note: "TODO define a conservative forbidden volume around cables and hoses."

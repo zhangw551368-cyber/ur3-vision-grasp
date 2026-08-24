@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Strictly PLAN ONLY. Search all four horizontal cube faces, then lift,
+       move 35 mm toward the table interior (+X), place, and retreat. -->
+  <arg name="live_config" default="$(find dual_arm_tasks)/config/right_arm_hsv_live_cube_20260821.yaml"/>
+  <arg name="stable_topic" default="/hsv_grasp/stable_object_point"/>
+  <arg name="support_plane_z" default="0.218227"/>
+
+  <include file="$(find dual_arm_tasks)/launch/right_arm_hsv_live_cube.launch">
+    <arg name="config" value="$(arg live_config)"/>
+    <arg name="stable_topic" value="$(arg stable_topic)"/>
+    <arg name="workspace_validation" value="true"/>
+    <arg name="snap_to_support_plane" value="true"/>
+  </include>
+
+  <include file="$(find dual_arm_tasks)/launch/right_arm_hsv_approach_test.launch">
+    <arg name="input_topic" value="$(arg stable_topic)"/>
+    <arg name="input_frame" value="base"/>
+    <arg name="planning_frame" value="base"/>
+    <arg name="grasp_stage" value="local_pick_place_preview"/>
+    <!-- local_pick_place_preview itself enumerates all four side strategies;
+         this compatibility value only satisfies the shared parameter guard. -->
+    <arg name="grasp_strategy" value="side_x_neg"/>
+    <arg name="orientation_mode" value="auto_side"/>
+    <arg name="object_point_semantic" value="top_center"/>
+    <arg name="support_plane_z" value="$(arg support_plane_z)"/>
+    <arg name="snap_cube_to_support_plane_for_preview" value="false"/>
+    <arg name="use_raw_detected_object_z_for_preview" value="true"/>
+    <arg name="safe_min_z" value="0.235"/>
+    <arg name="pregrasp_clearance" value="0.10"/>
+    <arg name="final_clearance" value="0.08"/>
+    <arg name="grasp_clearance" value="0.025"/>
+    <arg name="local_lift_height" value="0.08"/>
+    <arg name="local_retreat_distance" value="0.05"/>
+    <arg name="local_place_radius" value="0.05"/>
+    <arg name="local_place_offset" value="0.035"/>
+    <!-- The first four candidates are the four grasp faces for the +X
+         (table-interior) place offset. Do not consider an off-table offset. -->
+    <arg name="local_max_candidates" value="4"/>
+    <arg name="local_max_joint_motion" value="7.0"/>
+    <arg name="min_cartesian_fraction" value="0.995"/>
+    <arg name="filter_window" value="9"/>
+    <arg name="planning_time" value="7.0"/>
+    <arg name="num_planning_attempts" value="12"/>
+    <arg name="plan_once" value="true"/>
+    <arg name="attach_object_preview" value="true"/>
+    <arg name="execute" value="false"/>
+    <arg name="confirm" value="false"/>
+    <arg name="gripper_execute" value="false"/>
+  </include>
+</launch>

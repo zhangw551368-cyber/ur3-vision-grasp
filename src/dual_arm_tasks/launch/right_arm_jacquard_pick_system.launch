@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="start_camera" default="true"/>
+  <arg name="start_robot" default="true"/>
+  <arg name="start_moveit" default="true"/>
+  <arg name="start_rviz" default="false"/>
+  <arg name="start_left_arm" default="false"/>
+  <arg name="start_gripper" default="true"/>
+  <arg name="activate_gripper" default="true"/>
+  <arg name="enable_pointcloud" default="true"/>
+  <arg name="start_camera_tf" default="true"/>
+  <arg name="start_gripper_visualization" default="true"/>
+  <arg name="start_click_node" default="true"/>
+  <arg name="execute" default="false"/>
+  <arg name="yes" default="false"/>
+  <arg name="phase" default="full"/>
+  <arg name="auto_once" default="false"/>
+  <arg name="click_u" default="-1"/>
+  <arg name="click_v" default="-1"/>
+  <arg name="moveit_controller_manager" default="simple_right"/>
+
+  <arg name="right_gripper_device" default="/dev/serial/by-id/usb-FTDI_USB_TO_RS-485_DA6ACQ6P-if00-port0"/>
+  <arg name="calibration_file" default="$(env HOME)/.ros/easy_handeye/ur3_right_realsense_handeyecalibration_eye_on_base.yaml"/>
+  <arg name="config" default="$(find dual_arm_tasks)/config/right_arm_jacquard_click_pick.yaml"/>
+
+  <group if="$(arg start_camera)">
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+      <arg name="align_depth" value="true"/>
+      <arg name="enable_sync" value="true"/>
+      <arg name="enable_pointcloud" value="$(arg enable_pointcloud)"/>
+      <arg name="pointcloud_texture_stream" value="RS2_STREAM_COLOR"/>
+    </include>
+  </group>
+
+  <group if="$(arg start_robot)">
+    <include file="$(find ur_robot_driver)/launch/ur3_dual_bringup.launch">
+      <arg name="start_left_arm" value="$(arg start_left_arm)"/>
+      <arg name="start_right_arm" value="true"/>
+    </include>
+  </group>
+
+  <group unless="$(arg start_left_arm)">
+    <node pkg="dual_arm_tasks"
+          type="static_joint_state_publisher.py"
+          name="static_left_arm_joint_states"
+          output="screen">
+      <param name="prefix" value="left_arm_"/>
+      <param name="joint_state_topic" value="/left_arm/joint_states"/>
+    </node>
+  </group>
+
+  <group if="$(arg start_moveit)">
+    <include file="$(find ur3_dual_moveit_config)/launch/move_group.launch">
+      <arg name="moveit_controller_manager" value="$(arg moveit_controller_manager)"/>
+    </include>
+  </group>
+
+  <group if="$(arg start_camera_tf)">
+    <include file="$(find dual_arm_tasks)/launch/publish_right_arm_camera_tf.launch">
+      <arg name="calibration_file" value="$(arg calibration_file)"/>
+    </include>
+  </group>
+
+  <group if="$(arg start_gripper)">
+    <node pkg="robotiq_2f_gripper_control"
+          type="Robotiq2FGripperRtuNode_right.py"
+          name="right_robotiq2FGripper"
+          args="$(arg right_gripper_device)"
+          output="screen"/>
+  </group>
+
+  <group if="$(arg activate_gripper)">
+    <node pkg="dual_arm_tasks"
+          type="activate_right_gripper.py"
+          name="activate_right_gripper"
+          output="screen">
+      <param name="command_topic" value="/right_arm/Robotiq2FGripperRobotOutput"/>
+      <param name="open_position" value="0"/>
+      <param name="speed" value="120"/>
+      <param name="force" value="80"/>
+    </node>
+  </group>
+
+  <group if="$(arg start_gripper_visualization)">
+    <node pkg="dual_arm_tasks"
+          type="robotiq_2f_joint_state_visualizer.py"
+          name="right_gripper_joint_state_visualizer"
+          output="screen">
+      <param name="prefix" value="right_"/>
+      <param name="command_topic" value="/right_arm/Robotiq2FGripperRobotOutput"/>
+      <param name="status_topic" value="/right_arm/Robotiq2FGripperRobotInput"/>
+      <param name="preview_topic" value="/right_gripper/preview_command"/>
+      <param name="joint_state_topic" value="/right_gripper/joint_states"/>
+    </node>
+  </group>
+
+  <group if="$(arg start_click_node)">
+    <include file="$(find dual_arm_tasks)/launch/right_arm_jacquard_click_pick.launch">
+      <arg name="config" value="$(arg config)"/>
+      <arg name="execute" value="$(arg execute)"/>
+      <arg name="yes" value="$(arg yes)"/>
+      <arg name="phase" value="$(arg phase)"/>
+      <arg name="auto_once" value="$(arg auto_once)"/>
+      <arg name="click_u" value="$(arg click_u)"/>
+      <arg name="click_v" value="$(arg click_v)"/>
+    </include>
+  </group>
+
+  <group if="$(arg start_rviz)">
+    <include file="$(find ur3_dual_moveit_config)/launch/moveit_rviz.launch">
+      <arg name="rviz_config" value="$(find ur3_dual_moveit_config)/launch/moveit.rviz"/>
+    </include>
+  </group>
+</launch>

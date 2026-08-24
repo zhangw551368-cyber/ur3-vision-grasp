@@ -1,0 +1,220 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="config" default="/home/gzu/gzu_ws/right_arm_visual_aruco_pick_place.yaml"/>
+  <arg name="object_index" default="0"/>
+  <arg name="execute" default="false"/>
+  <arg name="yes" default="false"/>
+
+  <arg name="start_robot" default="false"/>
+  <arg name="start_left_arm" default="false"/>
+  <arg name="start_kinect2" default="true"/>
+  <arg name="start_moveit" default="true"/>
+  <arg name="start_static_tf" default="true"/>
+  <arg name="moveit_controller_manager" default="simple_right"/>
+  <arg name="static_tf_launch" default="$(find dual_arm_tasks)/launch/right_arm_base_to_kinect20_0610.launch"/>
+
+  <arg name="kinect_namespace" default="kinect_0"/>
+  <arg name="kinect_base_name" default="kinect2"/>
+  <arg name="kinect_base_name_tf" default="kinect2_0"/>
+  <arg name="kinect_sensor" default="226858434647"/>
+  <arg name="kinect_depth_method" default="cpu"/>
+  <arg name="kinect_publish_tf" default="false"/>
+
+  <arg name="start_aruco" default="false"/>
+  <arg name="marker_id" default="17"/>
+  <arg name="marker_size" default="0.04"/>
+  <arg name="aruco_dictionary" default="DICT_4X4_50"/>
+  <arg name="image_topic" default="/kinect_0/kinect2/qhd/image_color_rect"/>
+  <arg name="depth_topic" default="/kinect_0/kinect2/qhd/image_depth_rect"/>
+  <arg name="camera_info_topic" default="/kinect_0/kinect2/qhd/camera_info"/>
+  <arg name="camera_frame" default="kinect2_0_rgb_optical_frame"/>
+  <arg name="marker_frame" default="object_aruco_marker"/>
+  <arg name="aruco_pose_topic" default="/aruco_single/pose"/>
+  <arg name="detected_pose_topic" default="/detected_object_pose_base"/>
+
+  <arg name="aruco_to_grasp_offset_x" default="0.0"/>
+  <arg name="aruco_to_grasp_offset_y" default="0.0"/>
+  <arg name="aruco_to_grasp_offset_z" default="-0.03"/>
+  <arg name="visual_compensation_mode" default="aruco_geometry"/>
+  <arg name="nominal_marker_x" default="-0.187"/>
+  <arg name="nominal_marker_y" default="0.561"/>
+  <arg name="nominal_marker_z" default="0.361"/>
+  <arg name="compensation_axes" default="xy"/>
+  <arg name="max_visual_delta" default="0.12"/>
+  <arg name="pre_grasp_lift" default="0.08"/>
+  <arg name="lift_height" default="0.10"/>
+  <arg name="object_size_x" default="0.06"/>
+  <arg name="object_size_y" default="0.07"/>
+  <arg name="object_size_z" default="0.02"/>
+  <arg name="marker_to_object_center_x" default="0.037"/>
+  <arg name="marker_to_object_center_y" default="-0.079"/>
+  <arg name="marker_to_object_center_z" default="0.0"/>
+  <arg name="geometry_approach_x" default="0.0"/>
+  <arg name="geometry_approach_y" default="0.0"/>
+  <arg name="geometry_approach_z" default="-0.120"/>
+  <arg name="geometry_lift_x" default="0.0"/>
+  <arg name="geometry_lift_y" default="0.0"/>
+  <arg name="geometry_lift_z" default="-0.120"/>
+  <arg name="geometry_orientation_source" default="grasp"/>
+  <arg name="require_grasp_detection" default="true"/>
+  <arg name="gripper_status_topic" default="/right_arm/Robotiq2FGripperRobotInput"/>
+  <arg name="sample_count" default="5"/>
+  <arg name="pose_timeout" default="20.0"/>
+  <arg name="target_max_spread" default="0.012"/>
+  <arg name="detection_scale" default="2.0"/>
+
+  <group if="$(arg start_robot)">
+    <include file="$(find ur_robot_driver)/launch/ur3_dual_bringup.launch">
+      <arg name="start_left_arm" value="$(arg start_left_arm)"/>
+      <arg name="start_right_arm" value="true"/>
+    </include>
+  </group>
+
+  <group if="$(arg start_kinect2)" ns="$(arg kinect_namespace)">
+    <include file="$(find kinect2_bridge)/launch/kinect2_bridge.launch">
+      <arg name="base_name" value="$(arg kinect_base_name)"/>
+      <arg name="base_name_tf" value="$(arg kinect_base_name_tf)"/>
+      <arg name="sensor" value="$(arg kinect_sensor)"/>
+      <arg name="publish_tf" value="$(arg kinect_publish_tf)"/>
+      <arg name="depth_method" value="$(arg kinect_depth_method)"/>
+      <arg name="use_nodelet" value="true"/>
+      <arg name="start_manager" value="true"/>
+      <arg name="nodelet_manager" value="$(arg kinect_base_name)"/>
+    </include>
+  </group>
+
+  <group if="$(arg start_moveit)">
+    <include file="$(find ur3_dual_moveit_config)/launch/move_group.launch">
+      <arg name="moveit_controller_manager" value="$(arg moveit_controller_manager)"/>
+    </include>
+  </group>
+
+  <group if="$(arg start_static_tf)">
+    <include file="$(arg static_tf_launch)"/>
+  </group>
+
+  <group if="$(arg start_aruco)">
+    <node name="aruco_single" pkg="aruco_ros" type="single" output="screen">
+      <remap from="/camera_info" to="$(arg camera_info_topic)"/>
+      <remap from="/image" to="$(arg image_topic)"/>
+      <param name="image_is_rectified" value="true"/>
+      <param name="marker_size" value="$(arg marker_size)"/>
+      <param name="marker_id" value="$(arg marker_id)"/>
+      <param name="reference_frame" value=""/>
+      <param name="camera_frame" value="$(arg camera_frame)"/>
+      <param name="marker_frame" value="$(arg marker_frame)"/>
+    </node>
+  </group>
+
+  <group unless="$(arg execute)">
+    <node pkg="dual_arm_tasks"
+          type="visual_aruco_pick_place.py"
+          name="visual_aruco_pick_place"
+          output="screen"
+          args="--config $(arg config)
+                --object-index $(arg object_index)
+                --use-opencv-detection
+                --marker-id $(arg marker_id)
+                --aruco-dictionary $(arg aruco_dictionary)
+                --image-topic $(arg image_topic)
+                --depth-topic $(arg depth_topic)
+                --camera-info-topic $(arg camera_info_topic)
+                --aruco-pose-topic $(arg aruco_pose_topic)
+                --camera-frame $(arg camera_frame)
+                --detected-pose-topic $(arg detected_pose_topic)
+                --aruco-to-grasp-offset $(arg aruco_to_grasp_offset_x) $(arg aruco_to_grasp_offset_y) $(arg aruco_to_grasp_offset_z)
+                --visual-compensation-mode $(arg visual_compensation_mode)
+                --nominal-marker-base $(arg nominal_marker_x) $(arg nominal_marker_y) $(arg nominal_marker_z)
+                --compensation-axes $(arg compensation_axes)
+                --max-visual-delta $(arg max_visual_delta)
+                --pre-grasp-lift $(arg pre_grasp_lift)
+                --lift-height $(arg lift_height)
+                --object-size $(arg object_size_x) $(arg object_size_y) $(arg object_size_z)
+                --marker-to-object-center $(arg marker_to_object_center_x) $(arg marker_to_object_center_y) $(arg marker_to_object_center_z)
+                --geometry-approach-vector $(arg geometry_approach_x) $(arg geometry_approach_y) $(arg geometry_approach_z)
+                --geometry-lift-vector $(arg geometry_lift_x) $(arg geometry_lift_y) $(arg geometry_lift_z)
+                --geometry-orientation-source $(arg geometry_orientation_source)
+                --require-grasp-detection $(arg require_grasp_detection)
+                --gripper-status-topic $(arg gripper_status_topic)
+                --sample-count $(arg sample_count)
+                --pose-timeout $(arg pose_timeout)
+                --target-max-spread $(arg target_max_spread)
+                --detection-scale $(arg detection_scale)"/>
+  </group>
+
+  <group if="$(arg execute)">
+    <group unless="$(arg yes)">
+      <node pkg="dual_arm_tasks"
+            type="visual_aruco_pick_place.py"
+            name="visual_aruco_pick_place"
+            output="screen"
+            args="--config $(arg config)
+                  --object-index $(arg object_index)
+                  --use-opencv-detection
+                  --marker-id $(arg marker_id)
+                  --aruco-dictionary $(arg aruco_dictionary)
+                  --image-topic $(arg image_topic)
+                  --depth-topic $(arg depth_topic)
+                  --camera-info-topic $(arg camera_info_topic)
+                  --aruco-pose-topic $(arg aruco_pose_topic)
+                  --camera-frame $(arg camera_frame)
+                  --detected-pose-topic $(arg detected_pose_topic)
+                  --aruco-to-grasp-offset $(arg aruco_to_grasp_offset_x) $(arg aruco_to_grasp_offset_y) $(arg aruco_to_grasp_offset_z)
+                  --visual-compensation-mode $(arg visual_compensation_mode)
+                  --nominal-marker-base $(arg nominal_marker_x) $(arg nominal_marker_y) $(arg nominal_marker_z)
+                  --compensation-axes $(arg compensation_axes)
+                  --max-visual-delta $(arg max_visual_delta)
+                  --pre-grasp-lift $(arg pre_grasp_lift)
+                  --lift-height $(arg lift_height)
+                  --object-size $(arg object_size_x) $(arg object_size_y) $(arg object_size_z)
+                  --marker-to-object-center $(arg marker_to_object_center_x) $(arg marker_to_object_center_y) $(arg marker_to_object_center_z)
+                  --geometry-approach-vector $(arg geometry_approach_x) $(arg geometry_approach_y) $(arg geometry_approach_z)
+                  --geometry-lift-vector $(arg geometry_lift_x) $(arg geometry_lift_y) $(arg geometry_lift_z)
+                  --geometry-orientation-source $(arg geometry_orientation_source)
+                  --require-grasp-detection $(arg require_grasp_detection)
+                  --gripper-status-topic $(arg gripper_status_topic)
+                  --sample-count $(arg sample_count)
+                  --pose-timeout $(arg pose_timeout)
+                  --target-max-spread $(arg target_max_spread)
+                  --detection-scale $(arg detection_scale)
+                  --execute"/>
+    </group>
+
+    <group if="$(arg yes)">
+      <node pkg="dual_arm_tasks"
+            type="visual_aruco_pick_place.py"
+            name="visual_aruco_pick_place"
+            output="screen"
+            args="--config $(arg config)
+                  --object-index $(arg object_index)
+                  --use-opencv-detection
+                  --marker-id $(arg marker_id)
+                  --aruco-dictionary $(arg aruco_dictionary)
+                  --image-topic $(arg image_topic)
+                  --depth-topic $(arg depth_topic)
+                  --camera-info-topic $(arg camera_info_topic)
+                  --aruco-pose-topic $(arg aruco_pose_topic)
+                  --camera-frame $(arg camera_frame)
+                  --detected-pose-topic $(arg detected_pose_topic)
+                  --aruco-to-grasp-offset $(arg aruco_to_grasp_offset_x) $(arg aruco_to_grasp_offset_y) $(arg aruco_to_grasp_offset_z)
+                  --visual-compensation-mode $(arg visual_compensation_mode)
+                  --nominal-marker-base $(arg nominal_marker_x) $(arg nominal_marker_y) $(arg nominal_marker_z)
+                  --compensation-axes $(arg compensation_axes)
+                  --max-visual-delta $(arg max_visual_delta)
+                  --pre-grasp-lift $(arg pre_grasp_lift)
+                  --lift-height $(arg lift_height)
+                  --object-size $(arg object_size_x) $(arg object_size_y) $(arg object_size_z)
+                  --marker-to-object-center $(arg marker_to_object_center_x) $(arg marker_to_object_center_y) $(arg marker_to_object_center_z)
+                  --geometry-approach-vector $(arg geometry_approach_x) $(arg geometry_approach_y) $(arg geometry_approach_z)
+                  --geometry-lift-vector $(arg geometry_lift_x) $(arg geometry_lift_y) $(arg geometry_lift_z)
+                  --geometry-orientation-source $(arg geometry_orientation_source)
+                  --require-grasp-detection $(arg require_grasp_detection)
+                  --gripper-status-topic $(arg gripper_status_topic)
+                  --sample-count $(arg sample_count)
+                  --pose-timeout $(arg pose_timeout)
+                  --target-max-spread $(arg target_max_spread)
+                  --detection-scale $(arg detection_scale)
+                  --execute --yes"/>
+    </group>
+  </group>
+</launch>

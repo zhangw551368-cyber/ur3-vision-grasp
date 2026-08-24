@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<launch>
+  <include file="$(find ur_description)/launch/load_ur3_dual_gazebo.launch"/>
+
+  <rosparam file="$(find ur_description)/config/ur3_controllers_gazebo.yaml" command="load"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="worlds/empty.world"/>
+  </include>
+
+  <node name="model_spawner" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot -z 0.1" output="screen"/>
+
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" args="joint_state_controller left_arm_joint_traj_controller right_arm_joint_traj_controller" output="screen"/>
+
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen"/>
+
+</launch>

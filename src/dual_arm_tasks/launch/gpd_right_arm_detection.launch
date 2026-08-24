@@ -1,0 +1,14 @@
+<launch>
+  <arg name="cloud_topic" default="/camera/depth/color/points" />
+  <arg name="config_file" default="$(find dual_arm_tasks)/config/gpd_right_arm_eigen_params.cfg" />
+  <arg name="rviz_topic" default="/gpd/plot_grasps" />
+
+  <node name="gpd_detect_grasps" pkg="gpd_ros" type="detect_grasps" output="screen">
+    <!-- 0: sensor_msgs/PointCloud2, 1: gpd_ros/CloudIndexed, 2: gpd_ros/CloudSamples -->
+    <param name="cloud_type" value="0" />
+    <param name="cloud_topic" value="$(arg cloud_topic)" />
+    <param name="samples_topic" value="" />
+    <param name="config_file" value="$(arg config_file)" />
+    <param name="rviz_topic" value="$(arg rviz_topic)" />
+  </node>
+</launch>

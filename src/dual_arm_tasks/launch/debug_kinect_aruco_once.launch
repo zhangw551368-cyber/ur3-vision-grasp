@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="kinect_namespace" default="kinect_0"/>
+  <arg name="kinect_base_name" default="kinect2"/>
+  <arg name="kinect_base_name_tf" default="kinect2_0"/>
+  <arg name="kinect_sensor" default="226858434647"/>
+  <arg name="kinect_depth_method" default="cpu"/>
+
+  <arg name="image_topic" default="/kinect_0/kinect2/qhd/image_color_rect"/>
+  <arg name="aruco_dictionary" default="DICT_4X4_50"/>
+  <arg name="detection_scale" default="2.0"/>
+  <arg name="timeout" default="20.0"/>
+  <arg name="output" default="/tmp/gzu_kinect_aruco_debug.png"/>
+
+  <group ns="$(arg kinect_namespace)">
+    <include file="$(find kinect2_bridge)/launch/kinect2_bridge.launch">
+      <arg name="base_name" value="$(arg kinect_base_name)"/>
+      <arg name="base_name_tf" value="$(arg kinect_base_name_tf)"/>
+      <arg name="sensor" value="$(arg kinect_sensor)"/>
+      <arg name="publish_tf" value="true"/>
+      <arg name="depth_method" value="$(arg kinect_depth_method)"/>
+      <arg name="use_nodelet" value="true"/>
+      <arg name="start_manager" value="true"/>
+      <arg name="nodelet_manager" value="$(arg kinect_base_name)"/>
+    </include>
+  </group>
+
+  <node pkg="dual_arm_tasks"
+        type="debug_kinect_aruco_once.py"
+        name="debug_kinect_aruco_once"
+        output="screen"
+        required="true"
+        args="--image-topic $(arg image_topic)
+              --aruco-dictionary $(arg aruco_dictionary)
+              --detection-scale $(arg detection_scale)
+              --timeout $(arg timeout)
+              --output $(arg output)"/>
+</launch>

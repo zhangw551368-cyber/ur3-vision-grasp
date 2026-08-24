@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Compatibility wrapper. The former infinite-lifetime single Marker was
+       retired because it retained a false cube after detection stopped. -->
+  <arg name="input_topic" default="/hsv_grasp/object_point_base"/>
+  <arg name="target_frame" default="base"/>
+  <arg name="config" default="$(find dual_arm_tasks)/config/right_arm_hsv_live_cube_20260821.yaml"/>
+
+  <include file="$(find dual_arm_tasks)/launch/right_arm_hsv_live_cube.launch">
+    <arg name="config" value="$(arg config)"/>
+    <arg name="input_topic" value="$(arg input_topic)"/>
+    <arg name="target_frame" value="$(arg target_frame)"/>
+    <arg name="workspace_validation" value="true"/>
+    <arg name="snap_to_support_plane" value="true"/>
+  </include>
+</launch>

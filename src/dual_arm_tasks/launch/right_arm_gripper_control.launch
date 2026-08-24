@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="command_topic" default="/right_arm/Robotiq2FGripperRobotOutput"/>
+  <arg name="status_topic" default="/right_arm/Robotiq2FGripperRobotInput"/>
+  <arg name="open_position" default="0"/>
+  <arg name="close_position" default="210"/>
+  <arg name="speed" default="120"/>
+  <arg name="force" default="80"/>
+  <arg name="activate_on_start" default="false"/>
+
+  <node pkg="dual_arm_tasks"
+        type="right_arm_gripper_control.py"
+        name="right_arm_gripper_control"
+        output="screen">
+    <param name="command_topic" value="$(arg command_topic)"/>
+    <param name="status_topic" value="$(arg status_topic)"/>
+    <param name="open_position" value="$(arg open_position)"/>
+    <param name="close_position" value="$(arg close_position)"/>
+    <param name="speed" value="$(arg speed)"/>
+    <param name="force" value="$(arg force)"/>
+    <param name="activate_on_start" value="$(arg activate_on_start)"/>
+  </node>
+</launch>

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Restart this launch for every newly positioned cube. -->
+  <node pkg="dual_arm_tasks"
+        type="lock_hsv_grasp_target.py"
+        name="lock_hsv_grasp_target"
+        output="screen"
+        required="true">
+    <param name="input_topic" value="/hsv_grasp/object_point_base"/>
+    <param name="output_topic" value="/hsv_grasp/locked_object_point"/>
+    <param name="target_frame" value="base"/>
+    <param name="sample_count" value="7"/>
+    <param name="max_xy_span" value="0.015"/>
+    <rosparam param="x_bounds">[0.459749, 0.741749]</rosparam>
+    <rosparam param="y_bounds">[-0.452145, -0.002145]</rosparam>
+    <!-- Top-face observations only; rejects the z~=0.227 m tabletop alias. -->
+    <rosparam param="z_bounds">[0.250, 0.300]</rosparam>
+    <!-- Raw cube top-face plane.  The execution script converts this to cube
+         centre and adds 20 mm, reproducing successful close z=0.265727 m. -->
+    <param name="locked_z" value="0.273227"/>
+    <!-- RealSense often has a depth hole on the glossy cube.  Keep the live
+         HSV pixel ray, but intersect it with the measured cube-top plane. -->
+    <param name="project_to_locked_z_plane" value="true"/>
+    <param name="camera_frame" value="camera_color_optical_frame"/>
+  </node>
+</launch>

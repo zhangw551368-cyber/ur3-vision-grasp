@@ -1,0 +1,17 @@
+# Initial three-object perception lock from 2026-08-22, before the first block
+# was placed on the checkerboard.  Archive only; targets must be refreshed if
+# the blocks, board, camera or work surface move.
+frame_id: base
+object_top_points:
+  - [0.3719856713, -0.2617595476, 0.0011692672]
+  - [0.4112764686, -0.4040668695, 0.0208736009]
+  - [0.5226423587, -0.3049712846, 0.0303641138]
+place_surface_points:
+  - [0.6115959382, -0.1462729954, -0.0286709887]
+  - [0.5117759807, -0.1406967424, -0.0312039459]
+  - [0.5654405149, -0.0788846730, -0.0359099053]
+object_heights: [0.0238550318, 0.0294445850, 0.0459692536]
+square_size_m: 0.0227
+square_size_confirmed: false
+created_at: "2026-08-22T15:57:55+0800"
+

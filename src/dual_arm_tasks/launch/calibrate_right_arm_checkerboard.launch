@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="namespace_prefix" default="ur3_right_realsense_checkerboard_handeyecalibration"/>
+  <arg name="pattern_cols" default="5"/>
+  <arg name="pattern_rows" default="5"/>
+  <arg name="square_size" default="0.03"/>
+  <arg name="checkerboard_frame" default="camera_checkerboard"/>
+
+  <node name="checkerboard_pose_publisher"
+        pkg="dual_arm_tasks"
+        type="checkerboard_pose_publisher.py"
+        output="screen">
+    <param name="pattern_cols" value="$(arg pattern_cols)"/>
+    <param name="pattern_rows" value="$(arg pattern_rows)"/>
+    <param name="square_size" value="$(arg square_size)"/>
+    <param name="checkerboard_frame" value="$(arg checkerboard_frame)"/>
+    <param name="image_topic" value="/camera/color/image_raw"/>
+    <param name="camera_info_topic" value="/camera/color/camera_info"/>
+    <param name="camera_frame" value="camera_color_optical_frame"/>
+    <param name="publish_debug_image" value="true"/>
+    <param name="center_origin" value="true"/>
+  </node>
+
+  <include file="$(find easy_handeye)/launch/calibrate.launch">
+    <arg name="namespace_prefix" value="$(arg namespace_prefix)"/>
+    <arg name="eye_on_hand" value="false"/>
+    <arg name="move_group" value="right_arm"/>
+    <arg name="tracking_base_frame" value="camera_color_optical_frame"/>
+    <arg name="tracking_marker_frame" value="$(arg checkerboard_frame)"/>
+    <arg name="robot_base_frame" value="base"/>
+    <arg name="robot_effector_frame" value="right_arm_tool0"/>
+    <arg name="freehand_robot_movement" value="true"/>
+    <arg name="start_rviz" value="false"/>
+  </include>
+</launch>

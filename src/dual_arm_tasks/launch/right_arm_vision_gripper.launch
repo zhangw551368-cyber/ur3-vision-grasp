@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Use this when the UR3 arm is not connected yet, but camera and gripper tests are needed. -->
+  <arg name="start_camera" default="true"/>
+  <arg name="start_gripper" default="true"/>
+  <arg name="activate_gripper" default="true"/>
+  <arg name="enable_pointcloud" default="true"/>
+  <arg name="start_gripper_visualization" default="true"/>
+  <!-- 2026-06-04 field check: DA6ACN7O (/dev/ttyUSB1) moves the left gripper.
+       Use DA6ACQ6P for the right gripper; if it gives no status, check right gripper power/RS485. -->
+  <arg name="right_gripper_device" default="/dev/serial/by-id/usb-FTDI_USB_TO_RS-485_DA6ACQ6P-if00-port0"/>
+  <arg name="calibration_file" default="$(env HOME)/.ros/easy_handeye/ur3_right_realsense_handeyecalibration_eye_on_base.yaml"/>
+
+  <group if="$(arg start_camera)">
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+      <arg name="align_depth" value="true"/>
+      <arg name="enable_sync" value="true"/>
+      <arg name="enable_pointcloud" value="$(arg enable_pointcloud)"/>
+      <arg name="pointcloud_texture_stream" value="RS2_STREAM_COLOR"/>
+    </include>
+  </group>
+
+  <include file="$(find dual_arm_tasks)/launch/right_arm_vision_pipeline.launch">
+    <arg name="calibration_file" value="$(arg calibration_file)"/>
+  </include>
+
+  <group if="$(arg start_gripper)">
+    <node pkg="robotiq_2f_gripper_control"
+          type="Robotiq2FGripperRtuNode_right.py"
+          name="right_robotiq2FGripper"
+          args="$(arg right_gripper_device)"
+          output="screen"/>
+  </group>
+
+  <group if="$(arg activate_gripper)">
+    <node pkg="dual_arm_tasks"
+          type="activate_right_gripper.py"
+          name="activate_right_gripper"
+          output="screen">
+      <param name="command_topic" value="/right_arm/Robotiq2FGripperRobotOutput"/>
+      <param name="open_position" value="0"/>
+      <param name="speed" value="120"/>
+      <param name="force" value="80"/>
+    </node>
+  </group>
+
+  <group if="$(arg start_gripper_visualization)">
+    <node pkg="dual_arm_tasks"
+          type="robotiq_2f_joint_state_visualizer.py"
+          name="right_gripper_joint_state_visualizer"
+          output="screen">
+      <param name="prefix" value="right_"/>
+      <param name="command_topic" value="/right_arm/Robotiq2FGripperRobotOutput"/>
+      <param name="status_topic" value="/right_arm/Robotiq2FGripperRobotInput"/>
+      <param name="preview_topic" value="/right_gripper/preview_command"/>
+      <param name="joint_state_topic" value="/right_gripper/joint_states"/>
+    </node>
+  </group>
+</launch>

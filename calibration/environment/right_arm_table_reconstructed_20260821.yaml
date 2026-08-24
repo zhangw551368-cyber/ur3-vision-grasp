@@ -1,0 +1,47 @@
+method: two_reliable_edges_plus_caliper_dimensions
+frame_id: base
+date: '2026-08-21'
+units: metres
+cube_size: 0.055
+table_thickness: 0.018
+caliper_size:
+  x: 0.282
+  y: 0.450
+reliable_anchors:
+  x_min:
+    source: edge_1
+    observed_cube_top_center: [0.487249, -0.249030, 0.272438]
+    inferred_bound: 0.459749
+  y_max:
+    source: edge_2
+    observed_cube_top_center: [0.588609, -0.029645, 0.273227]
+    inferred_bound: -0.002145
+rejected_or_non_boundary_observations:
+  edge_3:
+    reason: unstable; MAD xyz was [15.6, 13.1, 69.0] mm
+  edge_4:
+    reason: stable observation but inconsistent with the known 450 mm span; not at the physical edge
+reconstruction:
+  bounds:
+    x_min: 0.459749
+    x_max: 0.741749
+    y_min: -0.452145
+    y_max: -0.002145
+    z_min: 0.200227
+    z_max: 0.218227
+  center: [0.600749, -0.227145, 0.209227]
+  size: [0.282, 0.450, 0.018]
+  yaw: 0.0
+height_evidence:
+  support_z_from_edge_1: 0.217438
+  support_z_from_edge_2: 0.218227
+  support_z_from_edge_4: 0.218450
+  selected_median: 0.218227
+independent_center_cross_check:
+  observed_xy: [0.601495, -0.237005]
+  reconstructed_xy: [0.600749, -0.227145]
+  error: 0.009888
+review:
+  geometry_complete: true
+  robot_motion_performed: false
+  note: Verify the brown collision box in RViz from top and side views before planning.

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="target_frame" default="base"/>
+  <arg name="input_topic" default="/red_object/point_camera"/>
+  <arg name="output_topic" default="/red_object/point_base"/>
+
+  <node pkg="dual_arm_tasks" type="transform_red_object.py" name="transform_red_object" output="screen">
+    <param name="target_frame" value="$(arg target_frame)"/>
+    <param name="input_topic" value="$(arg input_topic)"/>
+    <param name="output_topic" value="$(arg output_topic)"/>
+  </node>
+</launch>

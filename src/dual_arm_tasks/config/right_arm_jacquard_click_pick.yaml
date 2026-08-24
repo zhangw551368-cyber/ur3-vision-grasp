@@ -1,0 +1,91 @@
+enabled: true
+
+model_path: /home/gzu/gzu_ws/src/GRCNN/trained-models/jacquard-d-grconvnet3-drop0-ch32/epoch_50_iou_0.94
+grcnn_root: /home/gzu/gzu_ws/src/GRCNN
+use_cuda: true
+include_rgb: false
+include_depth: true
+crop_size: 300
+num_grasp_candidates: 8
+grasp_peak_min_distance: 20
+grasp_quality_threshold: 0.20
+selection_radius_pixels: 45
+distance_score_weight: 0.20
+auto_scan_stride_pixels: 100
+allow_outside_click_radius: false
+use_clicked_pixel_as_target: true
+
+arm_group: right_arm
+planning_frame: base
+end_effector_link: right_arm_tool0
+gripper_topic: /right_arm/Robotiq2FGripperRobotOutput
+gripper_status_topic: /right_arm/Robotiq2FGripperRobotInput
+robot_program_topic: /right_arm/ur_hardware_interface/robot_program_running
+
+color_topic: /camera/color/image_raw
+depth_topic: /camera/aligned_depth_to_color/image_raw
+camera_info_topic: /camera/color/camera_info
+
+velocity_scaling: 0.05
+acceleration_scaling: 0.05
+planning_time: 10.0
+num_planning_attempts: 10
+planner_id: RRTConnect
+plan_retries: 3
+goal_position_tolerance: 0.01
+goal_orientation_tolerance: 0.08
+display_pause_seconds: 0.8
+cartesian_step: 0.005
+cartesian_min_fraction: 0.995
+
+# Approach vector points from pre-grasp toward the object. The dual UR3 right
+# arm plans reliably with the same side-grasp posture used by the visual-pick
+# pipeline: approach from the right-arm side along base +Y.
+approach_vector: [0.0, 1.0, 0.0]
+pre_grasp_clearance: 0.170
+lift_distance: 0.080
+post_grasp_shift: [0.0, 0.0, 0.015]
+
+# Compute the right_arm_tool0 target from the real gripper pad midpoint instead
+# of hand-tuning a base-frame offset. TF reports the midpoint of the two inner
+# finger pads at roughly +13.1 cm along tool0 Z when the gripper is open.
+tool0_target_mode: tool_offset
+tool0_to_grasp_point: [0.0, 0.0, 0.131]
+
+# Legacy fallback only used when tool0_target_mode is approach_offset.
+grasp_depth_along_approach: -0.130
+
+# Offset is applied to the clicked 3D point before aligning the gripper pad
+# midpoint. A small negative Z can be used after an align test if the pads are
+# visibly above the block center.
+target_offset: [0.0, 0.0, 0.0]
+
+# For the original GRCNN planar grasp convention, the legacy URScript pipeline
+# used yaw = pi/2 - model_angle with roll=-pi, pitch=0.
+orientation_mode: fixed
+top_down_rpy: [-3.141592653589793, 0.0, 0.0]
+yaw_offset: 1.5707963267948966
+invert_model_angle: true
+fixed_orientation_quaternion: [-0.5, 0.5, 0.5, 0.5]
+
+target_bounds:
+  x: [-1.0, 1.0]
+  y: [-1.0, 1.0]
+  z: [-0.10, 1.15]
+
+depth_window_pixels: 9
+max_depth_m: 1.2
+min_depth_m: 0.05
+
+open_position: 0
+close_position: 255
+gripper_speed: 150
+gripper_force: 150
+gripper_settle_seconds: 1.0
+require_grasp_detection: true
+grasp_detection_timeout: 2.0
+retreat_on_missed_grasp: true
+
+window_name: right_arm_jacquard_click_pick
+debug_image_path: /tmp/right_arm_jacquard_click_debug.png
+debug_marker_topic: /right_arm/jacquard_debug_markers

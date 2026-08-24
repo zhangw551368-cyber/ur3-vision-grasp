@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="config" default="$(find dual_arm_tasks)/config/right_arm_markerless_sequence_pick.yaml"/>
+  <arg name="sequence" default=""/>
+  <arg name="execute" default="false"/>
+  <arg name="yes" default="false"/>
+  <arg name="detect_only" default="false"/>
+  <arg name="allow_missing" default="false"/>
+
+  <arg name="start_kinect2" default="true"/>
+  <arg name="start_moveit" default="true"/>
+  <arg name="start_static_tf" default="true"/>
+  <arg name="static_tf_launch" default="$(find dual_arm_tasks)/launch/right_arm_base_to_kinect20_0610.launch"/>
+
+  <arg name="kinect_namespace" default="kinect_0"/>
+  <arg name="kinect_base_name" default="kinect2"/>
+  <arg name="kinect_base_name_tf" default="kinect2_0"/>
+  <arg name="kinect_sensor" default="226858434647"/>
+  <arg name="kinect_depth_method" default="cpu"/>
+  <arg name="kinect_publish_tf" default="false"/>
+  <arg name="moveit_controller_manager" default="simple_right"/>
+
+  <group if="$(arg start_kinect2)" ns="$(arg kinect_namespace)">
+    <include file="$(find kinect2_bridge)/launch/kinect2_bridge.launch">
+      <arg name="base_name" value="$(arg kinect_base_name)"/>
+      <arg name="base_name_tf" value="$(arg kinect_base_name_tf)"/>
+      <arg name="sensor" value="$(arg kinect_sensor)"/>
+      <arg name="publish_tf" value="$(arg kinect_publish_tf)"/>
+      <arg name="depth_method" value="$(arg kinect_depth_method)"/>
+      <arg name="use_nodelet" value="true"/>
+      <arg name="start_manager" value="true"/>
+      <arg name="nodelet_manager" value="$(arg kinect_base_name)"/>
+    </include>
+  </group>
+
+  <group if="$(arg start_moveit)">
+    <include file="$(find ur3_dual_moveit_config)/launch/move_group.launch">
+      <arg name="moveit_controller_manager" value="$(arg moveit_controller_manager)"/>
+    </include>
+  </group>
+
+  <group if="$(arg start_static_tf)">
+    <include file="$(arg static_tf_launch)"/>
+  </group>
+
+  <node pkg="dual_arm_tasks"
+        type="right_arm_markerless_sequence_pick.py"
+        name="right_arm_markerless_sequence_pick"
+        output="screen"
+        args="--config $(arg config)
+              --sequence $(arg sequence)
+              --allow-missing $(arg allow_missing)
+              --execute $(arg execute)
+              --yes $(arg yes)
+              --detect-only $(arg detect_only)"/>
+</launch>

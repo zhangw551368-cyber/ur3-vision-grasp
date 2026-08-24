@@ -1,0 +1,31 @@
+Snapshot date: 2026-08-23
+Host OS: Ubuntu 20.04.6 LTS
+ROS distribution: noetic
+Python: 3.8.10
+CMake: 3.16.3
+Catkin tools: linked devel layout, extends /opt/ros/noetic
+
+python3-numpy 1:1.17.4-5ubuntu3.1
+python3-opencv 4.2.0+dfsg-5
+python3-yaml 5.3.1-1ubuntu0.1
+ros-noetic-desktop-full 1.5.0-1focal.20250521.014741
+ros-noetic-cv-bridge 1.16.2-1focal.20250519.235655
+ros-noetic-moveit 1.1.16-1focal.20250521.021831
+ros-noetic-moveit-commander 1.1.16-1focal.20250521.014903
+ros-noetic-moveit-msgs 0.11.4-1focal.20250520.001550
+ros-noetic-realsense2-camera 2.3.2-1focal.20250521.010944
+ros-noetic-rviz 1.14.26-1focal.20250520.002916
+ros-noetic-ur-client-library 2.0.0-1focal.20250426.010612
+ros-noetic-ur-dashboard-msgs 2.4.1-1focal.20250521.004732
+ros-noetic-ur-msgs 1.5.0-1focal.20250426.012629
+ros-noetic-scaled-joint-trajectory-controller 0.1.0-1focal.20250521.012627
+ros-noetic-speed-scaling-state-controller 0.1.0-1focal.20250520.001338
+ros-noetic-pass-through-controllers 0.1.0-1focal.20250521.013334
+ros-noetic-cartesian-trajectory-controller 0.1.7-1focal.20250521.012916
+
+Workspace source versions:
+ur_robot_driver 2.1.2
+ur_description 1.3.1
+ur3_dual_moveit_config 0.3.0
+dual_arm_tasks 0.1.0
+robotiq_2f_gripper_control 1.0.0

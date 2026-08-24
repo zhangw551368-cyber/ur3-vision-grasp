@@ -1,0 +1,37 @@
+# Right UR3 fixed-position pick-and-place template using UR digital IO.
+# Keep enabled=false until every pose has been measured and plan-only checks pass.
+enabled: false
+
+arm_group: right_arm
+
+# Gripper options:
+# - Standard controller digital output DOUT0: io_fun=1, io_pin=0
+# - Tool digital output TOOL_DOUT0: io_fun=1, io_pin=16, io_tool_voltage=24
+# - Tool digital output TOOL_DOUT1: io_fun=1, io_pin=17, io_tool_voltage=24
+gripper_mode: io
+io_service: /right_arm/ur_hardware_interface/set_io
+io_fun: 1
+io_pin: 0
+io_open_state: 0.0
+io_close_state: 1.0
+io_tool_voltage:
+
+velocity_scaling: 0.05
+acceleration_scaling: 0.05
+planning_time: 10.0
+gripper_settle_seconds: 1.0
+
+# Roll, pitch, yaw in radians. This is a top-down-style starting orientation.
+# Measure and adjust in RViz before real execution.
+orientation_rpy: [-3.1416, 0.0, -1.5708]
+
+# Placeholder coordinates in the MoveIt planning frame `base`.
+# Replace every value with measured safe poses for the current workcell.
+poses:
+  home: [0.35, -0.25, 0.35]
+  pre_grasp: [0.35, -0.25, 0.30]
+  grasp: [0.35, -0.25, 0.18]
+  lift: [0.35, -0.25, 0.32]
+  pre_place: [0.25, -0.38, 0.32]
+  place: [0.25, -0.38, 0.20]
+  retreat: [0.25, -0.38, 0.32]

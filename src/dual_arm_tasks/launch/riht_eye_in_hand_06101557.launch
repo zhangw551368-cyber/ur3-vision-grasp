@@ -1,0 +1,11 @@
+<launch>
+  <!-- The rpy in the comment uses the extrinsic XYZ convention, which is the same as is used in a URDF. See
+       http://wiki.ros.org/geometry2/RotationMethods and https://en.wikipedia.org/wiki/Euler_angles for more info. -->
+  <!-- Original calibration was right_arm_tool0 -> camera_color_optical_frame:
+       xyz="0.0448242 -0.0837073 0.0715438"
+       quat="-0.0154842 -0.0698839 0.720912 0.689321".
+       Publish the equivalent right_arm_tool0 -> camera_link transform instead,
+       because RealSense already publishes camera_link -> camera_color_optical_frame. -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="camera_link_broadcaster"
+      args="0.044268406 -0.068758213 0.072646476 0.661941094 -0.015271418 0.748422930 -0.038260803 right_arm_tool0 camera_link" />
+</launch>

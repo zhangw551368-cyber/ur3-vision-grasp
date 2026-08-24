@@ -1,0 +1,24 @@
+# Finite green conveyor collision box for MoveIt planning scene.
+# All distances are meters; conveyor_yaw is radians about the base frame Z axis.
+
+object_name: green_conveyor
+frame_id: base
+
+# Measure these values in the base planning frame and tune them for the real
+# green conveyor coverage area.
+conveyor_length: 0.80
+conveyor_width: 0.40
+conveyor_center_x: 0.45
+conveyor_center_y: 0.00
+conveyor_top_z: 0.59
+
+# The collision box is a thin slab whose top surface sits at:
+# conveyor_top_z + safety_margin.
+collision_thickness: 0.02
+safety_margin: 0.01
+
+# Rotate the finite rectangle around base Z if the conveyor is not axis-aligned.
+conveyor_yaw: 0.0
+
+# true: remove object_name from the planning scene and do not add it again.
+remove_only: false

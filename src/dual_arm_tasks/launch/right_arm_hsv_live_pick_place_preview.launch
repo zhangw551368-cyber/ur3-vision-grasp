@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Strictly PLAN ONLY: no robot trajectory or gripper command can be sent. -->
+  <arg name="live_config" default="$(find dual_arm_tasks)/config/right_arm_hsv_live_cube_20260821.yaml"/>
+  <arg name="stable_topic" default="/hsv_grasp/stable_object_point"/>
+  <arg name="support_plane_z" default="0.218227"/>
+  <arg name="place_offset_x" default="0.0"/>
+  <arg name="place_offset_y" default="0.08"/>
+  <arg name="top_down_max_tilt_deg" default="40.0"/>
+  <arg name="top_down_min_tilt_deg" default="20.0"/>
+  <!-- Close on the upper half of the 55 mm cube, leaving fingertip clearance
+       above the measured wooden support surface. -->
+  <arg name="grasp_offset_z" default="0.020"/>
+  <!-- Full pick/place preview contains six Cartesian legs; keep a bounded but
+       slightly wider cumulative joint-path budget than pick-only preview. -->
+  <arg name="top_down_max_joint_motion" default="7.0"/>
+  <arg name="top_down_max_finger_axis_vertical" default="0.30"/>
+
+  <include file="$(find dual_arm_tasks)/launch/right_arm_hsv_live_cube.launch">
+    <arg name="config" value="$(arg live_config)"/>
+    <arg name="stable_topic" value="$(arg stable_topic)"/>
+    <arg name="workspace_validation" value="true"/>
+    <arg name="snap_to_support_plane" value="true"/>
+  </include>
+
+  <include file="$(find dual_arm_tasks)/launch/right_arm_hsv_approach_test.launch">
+    <arg name="input_topic" value="$(arg stable_topic)"/>
+    <arg name="input_frame" value="base"/>
+    <arg name="planning_frame" value="base"/>
+    <arg name="grasp_stage" value="top_down_pick_place_preview"/>
+    <arg name="grasp_strategy" value="top_down"/>
+    <arg name="object_point_semantic" value="top_center"/>
+    <arg name="object_to_grasp_offset_z" value="$(arg grasp_offset_z)"/>
+    <arg name="support_plane_z" value="$(arg support_plane_z)"/>
+    <arg name="snap_cube_to_support_plane_for_preview" value="false"/>
+    <arg name="use_raw_detected_object_z_for_preview" value="true"/>
+    <arg name="safe_min_z" value="0.235"/>
+    <arg name="top_down_hover_height" value="0.20"/>
+    <arg name="top_down_lift_height" value="0.12"/>
+    <arg name="top_down_place_offset_x" value="$(arg place_offset_x)"/>
+    <arg name="top_down_place_offset_y" value="$(arg place_offset_y)"/>
+    <arg name="top_down_place_max_distance" value="0.10"/>
+    <arg name="top_down_max_tilt_deg" value="$(arg top_down_max_tilt_deg)"/>
+    <arg name="top_down_min_tilt_deg" value="$(arg top_down_min_tilt_deg)"/>
+    <arg name="top_down_max_joint_motion" value="$(arg top_down_max_joint_motion)"/>
+    <arg name="top_down_max_finger_axis_vertical" value="$(arg top_down_max_finger_axis_vertical)"/>
+    <arg name="top_down_min_cartesian_fraction" value="0.995"/>
+    <arg name="filter_window" value="9"/>
+    <arg name="planning_time" value="5.0"/>
+    <arg name="num_planning_attempts" value="10"/>
+    <arg name="plan_once" value="true"/>
+    <arg name="attach_object_preview" value="true"/>
+    <arg name="execute" value="false"/>
+    <arg name="confirm" value="false"/>
+    <arg name="gripper_execute" value="false"/>
+  </include>
+</launch>

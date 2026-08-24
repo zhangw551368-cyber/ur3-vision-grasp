@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="config" default="$(find dual_arm_tasks)/config/right_arm_yolo_red_block_grasp.yaml"/>
+  <arg name="model_path" default="/home/gzu/gzu_ws/src/ultralytics_ros/models/red_block.pt"/>
+  <arg name="yolo_python" default="/home/gzu/anaconda3/bin/python3"/>
+  <arg name="start_eye_in_hand_tf" default="false"/>
+  <arg name="start_tcp_tf" default="false"/>
+  <arg name="start_detector" default="true"/>
+  <arg name="start_pick" default="false"/>
+  <arg name="execute" default="false"/>
+  <arg name="yes" default="false"/>
+  <arg name="execute_args" value="$(eval '--execute' if str(arg('execute')).lower() == 'true' else '')"/>
+  <arg name="yes_args" value="$(eval '--yes' if str(arg('yes')).lower() == 'true' else '')"/>
+
+  <group if="$(arg start_eye_in_hand_tf)">
+    <include file="$(find dual_arm_tasks)/launch/eyehand/riht_eye_in_hand_06101557.launch"/>
+  </group>
+
+  <group if="$(arg start_tcp_tf)">
+    <node pkg="tf2_ros"
+          type="static_transform_publisher"
+          name="right_arm_tcp_155mm_broadcaster"
+          args="0 0 0.155 0 0 0 right_arm_tool0 right_arm_tcp"/>
+  </group>
+
+  <group if="$(arg start_detector)">
+    <node pkg="dual_arm_tasks"
+          type="yolo_red_block_locator.py"
+          name="yolo_red_block_locator"
+          output="screen"
+          launch-prefix="$(arg yolo_python)">
+      <rosparam command="load" file="$(arg config)"/>
+      <param name="model_path" value="$(arg model_path)"/>
+    </node>
+  </group>
+
+  <group if="$(arg start_pick)">
+    <node pkg="dual_arm_tasks"
+          type="yolo_red_block_pick.py"
+          name="yolo_red_block_pick"
+          output="screen"
+          args="--config $(arg config) $(arg execute_args) $(arg yes_args)"/>
+  </group>
+</launch>

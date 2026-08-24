@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="config" default="$(find dual_arm_tasks)/config/green_conveyor_collision.yaml"/>
+
+  <arg name="object_name" default=""/>
+  <arg name="frame_id" default=""/>
+  <arg name="conveyor_length" default=""/>
+  <arg name="conveyor_width" default=""/>
+  <arg name="conveyor_center_x" default=""/>
+  <arg name="conveyor_center_y" default=""/>
+  <arg name="conveyor_top_z" default=""/>
+  <arg name="collision_thickness" default=""/>
+  <arg name="safety_margin" default=""/>
+  <arg name="conveyor_yaw" default=""/>
+  <arg name="remove_only" default=""/>
+
+  <node pkg="dual_arm_tasks" type="add_green_conveyor_collision.py" name="add_green_conveyor_collision" output="screen">
+    <rosparam command="load" file="$(arg config)"/>
+
+    <param if="$(eval arg('object_name') != '')" name="object_name" value="$(arg object_name)"/>
+    <param if="$(eval arg('frame_id') != '')" name="frame_id" value="$(arg frame_id)"/>
+    <param if="$(eval arg('conveyor_length') != '')" name="conveyor_length" value="$(arg conveyor_length)"/>
+    <param if="$(eval arg('conveyor_width') != '')" name="conveyor_width" value="$(arg conveyor_width)"/>
+    <param if="$(eval arg('conveyor_center_x') != '')" name="conveyor_center_x" value="$(arg conveyor_center_x)"/>
+    <param if="$(eval arg('conveyor_center_y') != '')" name="conveyor_center_y" value="$(arg conveyor_center_y)"/>
+    <param if="$(eval arg('conveyor_top_z') != '')" name="conveyor_top_z" value="$(arg conveyor_top_z)"/>
+    <param if="$(eval arg('collision_thickness') != '')" name="collision_thickness" value="$(arg collision_thickness)"/>
+    <param if="$(eval arg('safety_margin') != '')" name="safety_margin" value="$(arg safety_margin)"/>
+    <param if="$(eval arg('conveyor_yaw') != '')" name="conveyor_yaw" value="$(arg conveyor_yaw)"/>
+    <param if="$(eval arg('remove_only') != '')" name="remove_only" value="$(arg remove_only)"/>
+  </node>
+</launch>

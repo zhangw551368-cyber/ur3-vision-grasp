@@ -1,0 +1,117 @@
+enabled: true
+
+arm_group: right_arm
+planning_frame: right_arm_base
+end_effector_link: right_arm_tool0
+pose_target_is_tcp: false
+tcp_offset_from_end_effector: [0.0, 0.0, 0.155]
+gripper_topic: /right_arm/Robotiq2FGripperRobotOutput
+gripper_preview_topic: /right_gripper/preview_command
+gripper_status_topic: /right_arm/Robotiq2FGripperRobotInput
+robot_program_topic: /right_arm/ur_hardware_interface/robot_program_running
+
+color_topic: /kinect_0/kinect2/qhd/image_color_rect
+depth_topic: /kinect_0/kinect2/qhd/image_depth_rect
+camera_info_topic: /kinect_0/kinect2/qhd/camera_info
+camera_frame: kinect2_0_rgb_optical_frame
+
+velocity_scaling: 0.035
+acceleration_scaling: 0.035
+planning_time: 12.0
+num_planning_attempts: 10
+planner_id: RRTConnect
+plan_retries: 3
+goal_position_tolerance: 0.012
+goal_orientation_tolerance: 0.10
+display_pause_seconds: 0.5
+
+orientation_quaternion: [-0.5, 0.5, 0.5, 0.5]
+approach_vector: [0.0, 1.0, 0.0]
+tool_to_grasp_center: 0.050
+pre_grasp_clearance: 0.040
+target_offset_by_label:
+  clock: [0.0, 0.0, -0.060]
+tool_to_grasp_center_by_label:
+  clock: 0.070
+  bird: 0.070
+pre_grasp_clearance_by_label:
+  clock: 0.025
+  bird: 0.025
+post_grasp_lift: [0.0, 0.0, 0.040]
+post_grasp_shift: [0.0, 0.0, 0.0]
+post_grasp_retreat_to_pregrasp: true
+post_retreat_lift: [0.0, 0.0, 0.0]
+
+cartesian_step: 0.005
+cartesian_min_fraction: 0.995
+require_grasp_detection: true
+grasp_detection_timeout: 2.0
+
+open_position: 0
+close_position: 220
+gripper_speed: 80
+gripper_force: 80
+gripper_settle_seconds: 1.0
+
+target_bounds:
+  x: [-1.0, 1.0]
+  y: [-1.0, 1.0]
+  z: [-0.10, 1.00]
+
+default_sequence: [banana, apple, clock, bird, red, black]
+debug_image_path: /tmp/right_arm_markerless_sequence_debug.png
+
+# Sticker center comes from the top visible sticker face. Shift down roughly
+# half the small block height to side-grasp the block body.
+sticker_center_offset: [0.0, 0.0, -0.020]
+solid_center_offset: [0.0, 0.0, 0.0]
+
+roi:
+  x_min: 0
+  y_min: 0
+  x_max: 720
+  y_max: 520
+
+sticker:
+  min_area_pixels: 250
+  max_area_pixels: 4500
+  min_width_pixels: 14
+  max_width_pixels: 90
+  min_height_pixels: 14
+  max_height_pixels: 90
+  min_aspect_ratio: 0.45
+  max_aspect_ratio: 1.9
+  white_saturation_max: 95
+  white_value_min: 135
+  max_y_pixels: 430
+  force_spatial_layout_labels: true
+  solid_overlap_iou_max: 0.22
+
+red:
+  low_1: [0, 80, 45]
+  high_1: [14, 255, 255]
+  low_2: [166, 80, 45]
+  high_2: [180, 255, 255]
+  min_area_pixels: 450
+  max_area_pixels: 9000
+  min_width_pixels: 20
+  max_width_pixels: 170
+  min_height_pixels: 15
+  max_height_pixels: 110
+
+black:
+  value_max: 80
+  saturation_min: 0
+  min_area_pixels: 600
+  max_area_pixels: 14000
+  min_width_pixels: 25
+  max_width_pixels: 190
+  min_height_pixels: 18
+  max_height_pixels: 130
+
+depth:
+  min_depth: 0.05
+  max_depth: 2.0
+  window_pixels: 11
+  bounds_quantile: 0.06
+  max_pixels_for_cloud: 5000

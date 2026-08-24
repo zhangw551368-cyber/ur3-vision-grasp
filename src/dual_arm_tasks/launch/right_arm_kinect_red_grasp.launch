@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="config" default="$(find dual_arm_tasks)/config/right_arm_kinect_red_grasp.yaml"/>
+  <arg name="start_moveit" default="false"/>
+  <arg name="start_kinect_tf" default="true"/>
+  <arg name="start_tcp_tf" default="true"/>
+  <arg name="start_locator" default="true"/>
+  <arg name="start_pick" default="false"/>
+  <arg name="execute" default="false"/>
+  <arg name="test_only_pregrasp" default="true"/>
+
+  <group if="$(arg start_moveit)">
+    <include file="$(find ur3_dual_moveit_config)/launch/move_group.launch">
+      <arg name="load_robot_description" value="true"/>
+      <arg name="moveit_controller_manager" value="simple_right"/>
+    </include>
+  </group>
+
+  <group if="$(arg start_kinect_tf)">
+    <include file="$(find dual_arm_tasks)/launch/eyehand/right_arm_base_0610.launch"/>
+  </group>
+
+  <group if="$(arg start_tcp_tf)">
+    <node pkg="tf2_ros"
+          type="static_transform_publisher"
+          name="right_arm_tcp_155mm_broadcaster"
+          args="0 0 0.155 0 0 0 right_arm_tool0 right_arm_tcp"/>
+  </group>
+
+  <group if="$(arg start_locator)">
+    <node pkg="dual_arm_tasks"
+          type="red_block_locator_kinect.py"
+          name="red_block_locator_kinect"
+          output="screen">
+      <rosparam command="load" file="$(arg config)"/>
+    </node>
+  </group>
+
+  <group if="$(arg start_pick)">
+    <node pkg="dual_arm_tasks"
+          type="simple_pick_red_block.py"
+          name="simple_pick_red_block"
+          output="screen">
+      <rosparam command="load" file="$(arg config)"/>
+      <param name="execute" value="$(arg execute)"/>
+      <param name="test_only_pregrasp" value="$(arg test_only_pregrasp)"/>
+    </node>
+  </group>
+</launch>

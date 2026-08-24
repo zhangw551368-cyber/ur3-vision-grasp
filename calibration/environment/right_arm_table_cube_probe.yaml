@@ -1,0 +1,92 @@
+method: five live cube placements; four edge midpoints plus table centre
+frame_id: base
+cube_size: 0.055
+table_thickness: 0.018
+raw_captures:
+- label: center
+  top_center:
+  - 0.601495
+  - -0.237005
+  - 0.226701
+  mad_xyz:
+  - 0.000184
+  - 0.000497
+  - 0.003
+  stable: true
+  sample_count: 30
+- label: edge_1
+  top_center:
+  - 0.487249
+  - -0.24903
+  - 0.272438
+  mad_xyz:
+  - 0.000166
+  - 0.000206
+  - 0.001001
+  stable: true
+  sample_count: 30
+- label: edge_2
+  top_center:
+  - 0.588609
+  - -0.029645
+  - 0.273227
+  mad_xyz:
+  - 5.0e-06
+  - 0.000175
+  - 0.001
+  stable: true
+  sample_count: 30
+- label: edge_3
+  top_center:
+  - 0.695609
+  - -0.22345
+  - 0.357928
+  mad_xyz:
+  - 0.015612
+  - 0.013108
+  - 0.069003
+  stable: false
+  sample_count: 30
+- label: edge_4
+  top_center:
+  - 0.592422
+  - -0.324548
+  - 0.27345
+  mad_xyz:
+  - 6.6e-05
+  - 0.000846
+  - 0.002502
+  stable: true
+  sample_count: 30
+selected_edge_labels:
+  x_min: edge_1
+  x_max: edge_3
+  y_min: edge_4
+  y_max: edge_2
+table_bounds:
+  x_min: 0.459749
+  x_max: 0.723109
+  y_min: -0.352048
+  y_max: -0.002145
+table_top_z: 0.218227
+height_spread: 0.131227
+table_center:
+- 0.591429
+- -0.177097
+- 0.209227
+table_size:
+- 0.26336
+- 0.349903
+- 0.018
+table_yaw: 0.0
+center_placement_error: 0.060748
+quality:
+  all_captures_stable: false
+  four_unique_edge_placements: true
+  height_consistent: false
+  size_matches_caliper: false
+  center_placement_consistent: false
+  quality_ok: false
+safe_to_copy_into_scene: false
+note: Review this report and physically cross-check table_top_z and all bounds. The
+  active PlanningScene is never modified by this tool.

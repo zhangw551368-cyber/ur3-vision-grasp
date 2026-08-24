@@ -1,0 +1,46 @@
+# Live HSV/depth cube validation in the MoveIt planning frame.
+# Units: metres and radians.
+#
+# The table pose combines stable live cube probes with the caliper dimensions.
+# edge_1 anchors x_min and edge_2 anchors y_max; the unseen opposite edges are
+# reconstructed from 0.282 x 0.450 m.  The independent centre observation is
+# within about 10 mm of the reconstructed centre.
+
+input_topic: /hsv_grasp/object_point_base
+target_frame: base
+marker_topic: /hsv_grasp/live_cube_markers
+stable_topic: /hsv_grasp/stable_object_point
+valid_topic: /hsv_grasp/live_cube_valid
+status_topic: /hsv_grasp/live_cube_status
+legacy_marker_topic: /hsv_grasp/object_marker
+
+cube_size: 0.055
+object_point_semantic: top_center
+filter_window: 9
+min_samples: 7
+stale_timeout: 0.8
+max_input_age: 0.5
+tf_timeout: 0.5
+
+# Robust stability limits. Current 30-sample observations had approximately
+# MAD=(0.9, 2.9, 8.3) mm, so these limits retain useful data while rejecting
+# a jumping target.
+max_mad_xy: 0.006
+max_mad_z: 0.012
+
+workspace_validation: true
+snap_to_support_plane: true
+show_raw_observation: true
+
+# Reconstructed wooden work surface in base.
+table_center_x: 0.600749
+table_center_y: -0.227145
+table_size_x: 0.282
+table_size_y: 0.450
+table_yaw: 0.0
+table_top_z: 0.218227
+
+# The full cube footprint must remain this far inside every table edge.
+edge_margin: 0.015
+# Difference between depth-inferred support plane and measured table top.
+max_support_z_error: 0.040

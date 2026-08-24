@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="config" default="$(find dual_arm_tasks)/config/right_arm_hsv_live_cube_20260821.yaml"/>
+  <arg name="input_topic" default="/hsv_grasp/object_point_base"/>
+  <arg name="target_frame" default="base"/>
+  <arg name="stable_topic" default="/hsv_grasp/stable_object_point"/>
+  <arg name="workspace_validation" default="true"/>
+  <arg name="snap_to_support_plane" default="true"/>
+
+  <node pkg="dual_arm_tasks"
+        type="sync_hsv_cube_scene.py"
+        name="sync_hsv_cube_scene"
+        output="screen"
+        required="true">
+    <rosparam command="load" file="$(arg config)"/>
+    <param name="input_topic" value="$(arg input_topic)"/>
+    <param name="target_frame" value="$(arg target_frame)"/>
+    <param name="stable_topic" value="$(arg stable_topic)"/>
+    <param name="workspace_validation" value="$(arg workspace_validation)"/>
+    <param name="snap_to_support_plane" value="$(arg snap_to_support_plane)"/>
+  </node>
+</launch>
+

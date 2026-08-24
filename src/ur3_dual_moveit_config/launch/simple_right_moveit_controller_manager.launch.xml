@@ -1,0 +1,5 @@
+<launch>
+  <!-- Right-arm-only controller list for right-arm visual picking. -->
+  <param name="moveit_controller_manager" value="moveit_simple_controller_manager/MoveItSimpleControllerManager" />
+  <rosparam file="$(find ur3_dual_moveit_config)/config/right_arm_controllers_moveit.yaml" />
+</launch>

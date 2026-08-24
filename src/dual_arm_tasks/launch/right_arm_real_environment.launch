@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="config" default="$(find dual_arm_tasks)/config/right_arm_real_environment_20260822.yaml"/>
+  <arg name="require_measured" default="true"/>
+  <arg name="dry_run" default="false"/>
+  <arg name="remove_only" default="false"/>
+
+  <node pkg="dual_arm_tasks"
+        type="publish_real_environment_scene.py"
+        name="publish_real_environment_scene"
+        output="screen"
+        required="false">
+    <rosparam command="load" file="$(arg config)"/>
+    <param name="require_measured" value="$(arg require_measured)"/>
+    <param name="dry_run" value="$(arg dry_run)"/>
+    <param name="remove_only" value="$(arg remove_only)"/>
+  </node>
+</launch>

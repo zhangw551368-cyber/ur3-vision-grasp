@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Keep the original camera namespace unchanged for existing tasks. -->
+  <arg name="primary_camera" default="camera"/>
+  <arg name="primary_serial_no" default="141722073883"/>
+
+  <!-- The second RealSense gets its own ROS namespace and TF prefix. -->
+  <arg name="secondary_camera" default="camera2"/>
+  <arg name="secondary_serial_no" default="912112073732"/>
+
+  <arg name="enable_pointcloud" default="true"/>
+  <arg name="align_depth" default="true"/>
+  <arg name="enable_sync" default="true"/>
+  <arg name="pointcloud_texture_stream" default="RS2_STREAM_COLOR"/>
+
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <arg name="camera" value="$(arg primary_camera)"/>
+    <arg name="tf_prefix" value="$(arg primary_camera)"/>
+    <arg name="serial_no" value="$(arg primary_serial_no)"/>
+    <arg name="align_depth" value="$(arg align_depth)"/>
+    <arg name="enable_sync" value="$(arg enable_sync)"/>
+    <arg name="enable_pointcloud" value="$(arg enable_pointcloud)"/>
+    <arg name="pointcloud_texture_stream" value="$(arg pointcloud_texture_stream)"/>
+  </include>
+
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <arg name="camera" value="$(arg secondary_camera)"/>
+    <arg name="tf_prefix" value="$(arg secondary_camera)"/>
+    <arg name="serial_no" value="$(arg secondary_serial_no)"/>
+    <arg name="align_depth" value="$(arg align_depth)"/>
+    <arg name="enable_sync" value="$(arg enable_sync)"/>
+    <arg name="enable_pointcloud" value="$(arg enable_pointcloud)"/>
+    <arg name="pointcloud_texture_stream" value="$(arg pointcloud_texture_stream)"/>
+  </include>
+</launch>

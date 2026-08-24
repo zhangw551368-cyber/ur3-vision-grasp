@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="color_topic" default="/kinect_1/kinect2/qhd/image_color_rect"/>
+  <arg name="depth_topic" default="/kinect_1/kinect2/qhd/image_depth_rect"/>
+  <arg name="camera_info_topic" default="/kinect_1/kinect2/qhd/camera_info"/>
+  <arg name="output" default="/home/gzu/gzu_ws/datasets/kinect_graspnet_capture"/>
+  <arg name="scene_id" default="0"/>
+  <arg name="camera_name" default="kinect"/>
+  <arg name="mode" default="manual"/>
+  <arg name="count" default="1"/>
+  <arg name="rate" default="1.0"/>
+  <arg name="target_width" default="0"/>
+  <arg name="target_height" default="0"/>
+  <arg name="geometry_space" default="color"/>
+  <arg name="show_preview" default="true"/>
+  <arg name="write_empty_labels" default="false"/>
+
+  <node pkg="dual_arm_tasks"
+        type="capture_kinect_graspnet_depth.py"
+        name="capture_kinect_graspnet_depth"
+        output="screen"
+        required="true"
+        args="--color-topic $(arg color_topic)
+              --depth-topic $(arg depth_topic)
+              --camera-info-topic $(arg camera_info_topic)
+              --output $(arg output)
+              --scene-id $(arg scene_id)
+              --camera-name $(arg camera_name)
+              --mode $(arg mode)
+              --count $(arg count)
+              --rate $(arg rate)
+              --target-width $(arg target_width)
+              --target-height $(arg target_height)
+              --geometry-space $(arg geometry_space)
+              --show-preview $(arg show_preview)
+              --write-empty-labels $(arg write_empty_labels)"/>
+</launch>

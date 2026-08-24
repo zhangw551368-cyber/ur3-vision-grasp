@@ -1,0 +1,45 @@
+date: 2026-08-22
+frame_id: base
+units: metres
+source: user measurements and annotated overhead image
+
+cabinet:
+  retained_bounds:
+    x: [-0.8275, 0.1525]
+    z: [-0.8050, -0.0100]
+  previous_y_bounds: [-0.2330, 1.0270]
+  extension_direction: negative_y
+  extension_length: 1.5000
+  updated_bounds:
+    x: [-0.8275, 0.1525]
+    y: [-1.7330, 1.0270]
+    z: [-0.8050, -0.0100]
+  updated_center: [-0.3375, -0.3530, -0.4075]
+  updated_size: [0.9800, 2.7600, 0.7950]
+
+green_cloth_work_surface:
+  measured_length: 1.2000
+  measured_width: 0.9000
+  width_axis: x
+  long_axis: y
+  x_distances_from_origin:
+    negative_x: 0.1000
+    positive_x: 0.8000
+  bounds_xy:
+    x: [-0.1000, 0.8000]
+    y: [-1.2000, 0.0000]
+  cabinet_top_z: -0.0100
+  surface_drop_from_cabinet: 0.0450
+  surface_top_z: -0.0550
+  planning_surface_proxy_depth: 0.0200
+  planning_box_center: [0.3500, -0.6000, -0.0650]
+  planning_box_size: [0.9000, 1.2000, 0.0200]
+  placement_note: >-
+    The near end of the 1.2 m side is aligned to y=0 and the table extends
+    toward the right arm along base -Y. Measure the two Y-edge offsets if
+    millimetre-level placement is required.
+
+safety_note: >-
+  The replacement tabletop top and horizontal footprint are modelled. Its legs,
+  frame, camera stand and cable swept volumes remain unmeasured, so do not use
+  this scene to approve trajectories underneath the tabletop.

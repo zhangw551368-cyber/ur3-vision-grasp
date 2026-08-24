@@ -1,0 +1,40 @@
+frames:
+  base_frame: right_arm_base
+  tool_frame: right_arm_tool0
+  camera_frame: camera2_color_optical_frame
+  target_frame: handeye_target
+method: eye_on_base_se3_lie_least_squares
+cost: 11.491868163456328
+success: true
+message: '`ftol` termination condition is satisfied.'
+sample_count: 15
+base_to_camera:
+  translation:
+  - -0.35254234782004606
+  - 0.19748484553085172
+  - 0.1526361202902033
+  quaternion_xyzw:
+  - -0.14120169438193972
+  - 0.3449968150633442
+  - 0.3687800010701088
+  - 0.8514931531789016
+tool_to_target:
+  translation:
+  - 0.024099587551707942
+  - 0.013863085857245916
+  - 0.17309589179548598
+  quaternion_xyzw:
+  - -0.4899123811422242
+  - 0.5072822380168486
+  - -0.5065662841544942
+  - -0.49602539204569107
+error_summary:
+  rotation_rad_mean: 0.005197203474580038
+  rotation_rad_max: 0.02194045204532539
+  rotation_deg_mean: 0.29777782436416317
+  rotation_deg_max: 1.2570953028063196
+  translation_m_mean: 0.011026644378707217
+  translation_m_max: 0.0179337582056346
+weights:
+  rotation_weight: 100.0
+  translation_weight: 100.0

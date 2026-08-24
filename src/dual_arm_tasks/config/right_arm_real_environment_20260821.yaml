@@ -1,0 +1,104 @@
+# Right-arm workcell collision geometry for MoveIt.
+# Units: metres and radians. Pose order: [x, y, z, roll, pitch, yaw].
+#
+# SAFETY:
+# - support_cabinet uses the physical measurements recorded on 2026-08-21.
+# - wooden_work_surface uses two camera-observed edges, the calibrated 55 mm
+#   cube, and the caliper dimensions 282 x 450 mm.  Its inferred centre was
+#   cross-checked against the independent centre placement (about 10 mm error).
+# - Values below do not yet include a planning safety margin.
+# - Do not approve robot execution until these objects have been independently
+#   checked against the real installation in RViz from several viewpoints.
+# - Camera/depth estimates are not accepted as authoritative collision geometry.
+# - Safety clearance is added after recording the raw measurements.
+
+scene_id: right_arm_lab_20260821
+frame_id: base
+require_measured: true
+dry_run: false
+remove_only: false
+scene_timeout: 8.0
+
+objects:
+  # Main aluminium-framed cabinet/platform carrying the dual-arm pedestal.
+  # Raw measured bounds in base, metres:
+  #   x = [-0.8275, +0.1525]
+  #   y = [-0.2330, +1.0270]
+  #   z = [-0.8050, -0.0100]
+  - name: support_cabinet
+    type: box
+    enabled: true
+    measured: true
+    pose: [-0.3375, 0.3970, -0.4075, 0.0, 0.0, 0.0]
+    size: [0.9800, 1.2600, 0.7950]
+    color: [0.20, 0.42, 0.72, 1.00]
+    note: "Measured box. Top is z=-0.010 m; no safety padding has been added yet."
+
+  # Wooden rounded rectangular work surface carrying the cube.  Rounded
+  # corners are conservatively represented by an axis-aligned box.  Long side
+  # is parallel to base Y.  Reconstructed bounds in base, metres:
+  #   x = [+0.459749, +0.741749]
+  #   y = [-0.452145, -0.002145]
+  #   z = [+0.200227, +0.218227]
+  # Anchors: edge_1 -> x_min; edge_2 -> y_max.  Opposite edges are completed
+  # from the caliper dimensions because they are outside the camera FOV.
+  - name: wooden_work_surface
+    type: box
+    enabled: true
+    measured: true
+    pose: [0.600749, -0.227145, 0.209227, 0.0, 0.0, 0.0]
+    size: [0.2820, 0.4500, 0.0180]
+    color: [0.76, 0.43, 0.16, 1.00]
+    note: "Reconstructed from stable x_min/y_max cube probes plus caliper size; centre placement cross-check error=9.9 mm."
+
+  # Size reference for the detected cube.  It remains disabled here because
+  # its x/y pose must be updated from the validated HSV/depth result at runtime.
+  - name: detected_cube_reference
+    type: box
+    enabled: false
+    measured: true
+    pose: [0.0, 0.0, 0.0275, 0.0, 0.0, 0.0]
+    size: [0.0550, 0.0550, 0.0550]
+    color: [0.05, 0.35, 1.00, 0.90]
+    note: "Measured cube size only; disabled until a validated runtime pose is supplied."
+
+  # Pedestal underneath the wooden surface, if it is inside the robot reach.
+  # Cylinder size order is [height, radius].
+  - name: wooden_table_pedestal
+    type: cylinder
+    enabled: false
+    measured: false
+    pose: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    size: [0.10, 0.05]
+    color: [0.50, 0.50, 0.50, 1.00]
+    note: "TODO measure pole diameter, vertical range and centre x/y."
+
+  - name: wooden_table_floor_base
+    type: cylinder
+    enabled: false
+    measured: false
+    pose: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    size: [0.02, 0.10]
+    color: [0.45, 0.45, 0.45, 1.00]
+    note: "TODO measure floor-base diameter, thickness and centre x/y."
+
+  # Use one or more conservative primitives for the fixed black stand near the
+  # work surface. Split vertical pole, base and boom into separate entries later.
+  - name: camera_stand_keepout
+    type: box
+    enabled: false
+    measured: false
+    pose: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    size: [0.10, 0.10, 0.10]
+    color: [0.12, 0.12, 0.12, 1.00]
+    note: "TODO measure fixed stand/base/boom after the two critical surfaces."
+
+  # Soft cables cannot be modelled exactly; cover their possible swept volume.
+  - name: cable_keepout
+    type: box
+    enabled: false
+    measured: false
+    pose: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    size: [0.10, 0.10, 0.10]
+    color: [0.90, 0.15, 0.15, 0.45]
+    note: "TODO define a conservative forbidden volume around cables and hoses."

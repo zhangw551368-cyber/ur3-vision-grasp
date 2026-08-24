@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Final eye-on-base TF for right arm + RealSense camera2.
+       Do not run this together with MoveIt Calibration RViz camera-pose publishing
+       or the old easy_handeye result for camera2_color_optical_frame.
+  -->
+  <arg name="parent_frame" default="right_arm_base"/>
+  <arg name="camera_link_frame" default="camera2_link"/>
+
+  <arg name="x" default="-0.3453969071509616"/>
+  <arg name="y" default="0.20538349650049498"/>
+  <arg name="z" default="0.14273667597057518"/>
+  <arg name="qx" default="0.7133486130626889"/>
+  <arg name="qy" default="0.0015729891881677033"/>
+  <arg name="qz" default="0.5067752377920489"/>
+  <arg name="qw" default="0.48405592683838117"/>
+
+  <node pkg="tf2_ros"
+        type="static_transform_publisher"
+        name="right_arm_camera2_eye_on_base_broadcaster"
+        args="$(arg x) $(arg y) $(arg z) $(arg qx) $(arg qy) $(arg qz) $(arg qw) $(arg parent_frame) $(arg camera_link_frame)" />
+</launch>

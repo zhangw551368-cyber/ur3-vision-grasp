@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: ur_description
+    relative_path: urdf/ur3_dual.xacro
+    xacro_args: robot_model:=ur3
+  SRDF:
+    relative_path: config/ur3_robot.srdf
+  CONFIG:
+    author_name: test
+    author_email: test@123.com
+    generated_timestamp: 1676464809

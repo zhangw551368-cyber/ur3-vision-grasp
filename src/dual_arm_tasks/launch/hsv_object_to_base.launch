@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="input_topic" default="/hsv_grasp/object_point_camera"/>
+  <arg name="output_topic" default="/hsv_grasp/object_point_base"/>
+  <arg name="expected_input_frame" default="camera_color_optical_frame"/>
+  <arg name="target_frame" default="right_arm_base"/>
+  <arg name="tf_timeout" default="0.2"/>
+  <arg name="max_abs_coordinate_m" default="10.0"/>
+
+  <node pkg="dual_arm_tasks" type="hsv_object_to_base.py" name="hsv_object_to_base" output="screen">
+    <param name="input_topic" value="$(arg input_topic)"/>
+    <param name="output_topic" value="$(arg output_topic)"/>
+    <param name="expected_input_frame" value="$(arg expected_input_frame)"/>
+    <param name="target_frame" value="$(arg target_frame)"/>
+    <param name="tf_timeout" value="$(arg tf_timeout)"/>
+    <param name="max_abs_coordinate_m" value="$(arg max_abs_coordinate_m)"/>
+  </node>
+</launch>

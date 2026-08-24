@@ -1,0 +1,85 @@
+# Right-arm object_1 fixed TCP trajectory with eye-in-hand visual XY bias correction.
+# The fixed poses are the previously successful right_arm_tool0_controller/TCP poses.
+
+enabled: true
+
+arm_group: right_arm
+planning_frame: right_arm_base
+end_effector_link: right_arm_tool0
+
+pose_target_is_tcp: true
+tcp_offset_from_end_effector: [0.0, 0.0, 0.155]
+use_joint_targets_from_ik: true
+ik_timeout: 1.0
+avoid_collisions: true
+
+gripper_mode: robotiq_topic
+gripper_topic: /right_arm/Robotiq2FGripperRobotOutput
+open_position: 0
+close_position: 255
+gripper_speed: 80
+gripper_force: 80
+gripper_settle_seconds: 1.0
+
+velocity_scaling: 0.03
+acceleration_scaling: 0.03
+planning_time: 20.0
+orientation_rpy: [-3.1416, 0.0, -1.5708]
+
+robot_program_topic: /right_arm/ur_hardware_interface/robot_program_running
+vision_target_topic: /red_block/point_base
+
+# Captured at the current object_1 placement before execution on 2026-06-10.
+# The detector point is not the TCP grasp point; it is used only as a repeatable
+# visual reference for small XY shifts on the table.
+vision_reference_pose: grasp
+vision_reference_point: [-0.017598, 0.457252, 0.393960]
+apply_visual_delta_axes: [true, true, false]
+max_visual_delta: [0.060, 0.060, 0.005]
+shift_visual_pose_names: [pre_grasp, grasp, lift]
+target_sample_count: 5
+target_timeout: 8.0
+target_max_spread: 0.005
+
+poses:
+  home:
+    translation: [-0.532, -0.054, 0.500]
+    quaternion: [-0.513, 0.505, 0.693, -0.046]
+    rpy_radian: [1.619, 0.725, -2.250]
+    rpy_degree: [92.788, 41.560, -128.908]
+
+  pre_grasp:
+    translation: [-0.104, 0.384, 0.326]
+    quaternion: [-0.140, 0.352, 0.365, 0.850]
+    rpy_radian: [0.026, 0.777, 0.822]
+    rpy_degree: [1.484, 44.546, 47.086]
+
+  grasp:
+    translation: [-0.075, 0.417, 0.369]
+    quaternion: [-0.143, 0.372, 0.312, 0.862]
+    rpy_radian: [-0.023, 0.820, 0.683]
+    rpy_degree: [-1.308, 47.009, 39.156]
+
+  lift:
+    translation: [-0.104, 0.384, 0.326]
+    quaternion: [-0.140, 0.352, 0.365, 0.850]
+    rpy_radian: [0.026, 0.777, 0.822]
+    rpy_degree: [1.484, 44.546, 47.086]
+
+  pre_place:
+    translation: [-0.298, 0.265, 0.471]
+    quaternion: [-0.130, 0.358, 0.352, 0.855]
+    rpy_radian: [0.042, 0.781, 0.799]
+    rpy_degree: [2.410, 44.741, 45.794]
+
+  place:
+    translation: [-0.269, 0.292, 0.498]
+    quaternion: [-0.157, 0.382, 0.346, 0.843]
+    rpy_radian: [-0.001, 0.851, 0.778]
+    rpy_degree: [-0.035, 48.736, 44.597]
+
+  retreat:
+    translation: [-0.532, -0.054, 0.500]
+    quaternion: [-0.513, 0.505, 0.693, -0.046]
+    rpy_radian: [1.619, 0.725, -2.250]
+    rpy_degree: [92.788, 41.560, -128.908]

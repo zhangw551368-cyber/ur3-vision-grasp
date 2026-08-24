@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="config" default="$(find dual_arm_tasks)/config/right_arm_visual_pick.yaml"/>
+  <arg name="execute" default="false"/>
+  <arg name="yes" default="false"/>
+  <arg name="phase" default="full"/>
+
+  <group unless="$(arg execute)">
+    <node pkg="dual_arm_tasks"
+          type="right_arm_visual_pick.py"
+          name="right_arm_visual_pick"
+          output="screen"
+          args="--config $(arg config) --phase $(arg phase)"/>
+  </group>
+
+  <group if="$(arg execute)">
+    <group unless="$(arg yes)">
+      <node pkg="dual_arm_tasks"
+            type="right_arm_visual_pick.py"
+            name="right_arm_visual_pick"
+            output="screen"
+            args="--config $(arg config) --phase $(arg phase) --execute"/>
+    </group>
+
+    <group if="$(arg yes)">
+      <node pkg="dual_arm_tasks"
+            type="right_arm_visual_pick.py"
+            name="right_arm_visual_pick"
+            output="screen"
+            args="--config $(arg config) --phase $(arg phase) --execute --yes"/>
+    </group>
+  </group>
+</launch>

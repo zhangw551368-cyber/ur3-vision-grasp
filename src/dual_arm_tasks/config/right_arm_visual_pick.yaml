@@ -1,0 +1,106 @@
+# Right-arm visual pick defaults for the red block pipeline.
+# Real execution is unlocked for the staged on-site checks below. Keep using
+# phase=approach before phase=grasp until offsets have been verified.
+enabled: true
+
+arm_group: right_arm
+planning_frame: base
+end_effector_link: right_arm_tool0
+gripper_topic: /right_arm/Robotiq2FGripperRobotOutput
+gripper_preview_topic: /right_gripper/preview_command
+target_topic: /red_object/point_base
+color_topic: /camera/color/image_raw
+depth_topic: /camera/aligned_depth_to_color/image_raw
+camera_info_topic: /camera/color/camera_info
+
+velocity_scaling: 0.05
+acceleration_scaling: 0.05
+planning_time: 10.0
+num_planning_attempts: 10
+planner_id: RRTConnect
+plan_retries: 3
+display_pause_seconds: 1.0
+goal_position_tolerance: 0.01
+goal_orientation_tolerance: 0.08
+
+# Horizontal side grasp from the right-arm side. Tool +Z points along base +Y
+# toward the block, and the fingers close horizontally across base X.
+orientation_quaternion: [-0.5, 0.5, 0.5, 0.5]
+approach_vector: [0.0, 1.0, 0.0]
+
+# URDF chain from tool0 to the inner finger pad center is about 130 mm.
+tool_to_grasp_center: 0.050
+pre_grasp_clearance: 0.250
+manual_retreat_distance: 0.100
+failure_retreat_distance: 0.080
+failure_lift_distance: 0.080
+
+# Keep post-grasp motion deliberately small: lift 30 mm, retreat toward the
+# right-arm side by 20 mm, then stop.
+post_grasp_lift: [0.0, 0.0, 0.030]
+post_grasp_shift: [0.0, -0.020, 0.0]
+
+# Estimate the 3D block center from the segmented contour instead of treating
+# one visible surface pixel as the grasp center. Re-check immediately before descent.
+target_sample_count: 3
+target_timeout: 10.0
+target_max_spread: 0.012
+target_max_shift: 0.015
+image_timeout: 3.0
+
+# Reject obvious background detections before planning. These bounds are in
+# the MoveIt planning frame and are deliberately wider than the normal UR3
+# pick workspace.
+target_bounds:
+  x: [-1.0, 1.0]
+  y: [-1.0, 1.0]
+  z: [-0.10, 1.00]
+
+red_low_1: [0, 100, 50]
+red_high_1: [12, 255, 255]
+red_low_2: [168, 100, 50]
+red_high_2: [180, 255, 255]
+use_roi: true
+roi_x_min: 0
+roi_y_min: 0
+roi_x_max: 640
+roi_y_max: 480
+min_area_pixels: 800
+max_area_pixels: 12000
+min_bbox_width_pixels: 25
+max_bbox_width_pixels: 130
+min_bbox_height_pixels: 25
+max_bbox_height_pixels: 160
+min_aspect_ratio: 0.35
+max_aspect_ratio: 1.8
+min_fill_ratio: 0.45
+min_depth_samples: 300
+min_top_face_samples: 80
+visible_bounds_quantile: 0.02
+# Drop frames where depth noise or partial occlusion makes the segmented block
+# physically too large in base coordinates.
+visible_span_limits:
+  x: 0.18
+  y: 0.12
+  z: 0.12
+top_face_quantile: 0.75
+top_bounds_quantile: 0.05
+hover_position_tolerance: 0.015
+
+# Near-object motion must stay Cartesian, and lifting is forbidden unless the
+# Robotiq reports that closing stopped on an object.
+cartesian_step: 0.005
+cartesian_min_fraction: 0.995
+require_grasp_detection: true
+grasp_detection_timeout: 2.0
+gripper_status_topic: /right_arm/Robotiq2FGripperRobotInput
+robot_program_topic: /right_arm/ur_hardware_interface/robot_program_running
+
+# Small offsets in base frame for camera/marker bias compensation after testing.
+target_offset: [0.0, 0.0, 0.0]
+
+open_position: 0
+close_position: 210
+gripper_speed: 80
+gripper_force: 80
+gripper_settle_seconds: 1.0

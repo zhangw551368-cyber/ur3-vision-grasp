@@ -1,0 +1,22 @@
+# Measure these poses in RViz before enabling real execution.
+# The sample pick area is based on the earlier /home/gzu/ur3_moveit_pick.py experiment.
+enabled: false
+arm_group: left_arm
+gripper_topic: /left_arm/Robotiq2FGripperRobotOutput
+
+velocity_scaling: 0.08
+acceleration_scaling: 0.08
+planning_time: 8.0
+gripper_settle_seconds: 1.5
+
+# Roll, pitch, yaw in radians. This points the gripper downward as in the earlier script.
+orientation_rpy: [-3.1416, 0.0, -1.5708]
+
+poses:
+  home: [0.45, 0.27, 0.32]
+  pre_grasp: [0.45, 0.27, 0.32]
+  grasp: [0.45, 0.27, 0.22]
+  lift: [0.45, 0.27, 0.34]
+  pre_place: [0.34, 0.36, 0.34]
+  place: [0.34, 0.36, 0.24]
+  retreat: [0.34, 0.36, 0.34]

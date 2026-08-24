@@ -1,0 +1,97 @@
+# Three blue objects outside an 8x6-inner-corner checkerboard.
+# This file configures perception only and cannot move the robot.
+image_topic: /camera/color/image_raw
+depth_topic: /camera/aligned_depth_to_color/image_raw
+camera_info_topic: /camera/color/camera_info
+camera_frame: camera_color_optical_frame
+target_frame: right_arm_base
+process_rate: 10.0
+max_color_depth_dt: 0.12
+
+# Initial values accepted from the 2026-08-22 live tuning screenshot.
+h_min: 90
+h_max: 108
+s_min: 128
+s_max: 255
+v_min: 135
+v_max: 255
+
+# Join the separated blue tiles on the cube face.  A 17 px closing kernel keeps
+# the two isolated bars separate in the current 1280x720 camera view.
+close_kernel: 17
+dilate_kernel: 3
+dilate_iterations: 1
+min_area: 1200.0
+max_area: 15000.0
+min_width: 25
+max_width: 150
+min_height: 20
+max_height: 150
+min_fill_ratio: 0.35
+min_depth_m: 0.05
+max_depth_m: 3.0
+min_depth_samples: 80
+depth_erode_kernel: 3
+expected_object_count: 3
+
+# Final successful 2026-08-23 run used the latest raw HSV contour centres with
+# no empirical image-plane offset.  The values and explicit per-object list
+# remain zero so future fallback logic cannot silently reintroduce an offset.
+object_center_offset_u_px: 0.0
+object_center_offset_v_px: 0.0
+object_center_offset_min_aspect_ratio: 1.40
+# Sorted right-to-left object corrections [u_px, v_px].  Disabled for all
+# objects on operator request: lock the latest raw HSV contour centres once
+# before planning, then do not update them after robot motion begins.
+object_center_offsets_px:
+  - [0.0, 0.0]
+  - [0.0, 0.0]
+  - [0.0, 0.0]
+
+# Pick the object nearest the right side first, then move left.
+sort_mode: right_to_left
+
+# The live board has 8x6 internal corners. RGB-D geometry estimates 22.5-22.8 mm;
+# 22.7 mm is provisional until one physical square is measured with a ruler.
+pattern_cols: 8
+pattern_rows: 6
+square_size: 0.0227
+square_size_confirmed: false
+min_object_height: 0.015
+max_object_height: 0.080
+# 2026-08-23 current camera view: a tighter ROI avoids the blue objects and
+# high-contrast robot frame that made findChessboardCornersSB reject the board.
+# Cover both observed board positions without including the high-contrast
+# right-hand robot frame.  The former y_min=330 cropped the first checkerboard
+# row after the board was moved on 2026-08-23.
+board_roi_x_min: 430
+board_roi_y_min: 240
+board_roi_x_max: 880
+board_roi_y_max: 670
+board_exclusion_margin_px: 10
+
+# A triangular layout leaves more clearance than three 55 mm objects in one row.
+# Units are metres in the board frame.
+placement_offsets:
+  # 2026-08-23 reachable-side triangular layout.  The former -0.050 X
+  # placement mapped to base x~=0.629 m and was unreachable at the required
+  # release height.  These points remain inside the printed board and keep
+  # approximately 65--83 mm centre spacing.
+  # All three use the checkerboard's reachable-side column.  The previous
+  # centre point mapped to base x~=0.608 m and had no release IK even at 40deg.
+  # Row spacing is 60 mm: the two bars flank the larger cube.
+  - [0.050, -0.060, 0.0]
+  - [0.050, 0.060, 0.0]
+  - [0.030, 0.000, 0.0]
+
+# RViz task-target preview.  These values mirror the guarded task YAML and are
+# visualization-only; this perception node never commands the robot.
+task_marker_topic: /hsv_grasp/grasp_debug_markers
+task_grasp_above_center: 0.020
+task_lift_distance: 0.140
+task_release_tcp_clearance: 0.120
+task_release_clearance: 0.050
+task_active_object_indices: [0, 1, 2]
+task_placement_indices: [0, 1, 2]
+
+show_window: true

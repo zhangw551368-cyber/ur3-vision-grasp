@@ -1,0 +1,87 @@
+# Guarded real execution using the validated live HSV/depth cube point.
+enabled: true
+
+arm_group: right_arm
+planning_frame: base
+end_effector_link: right_arm_tool0
+target_source: point_topic
+target_topic: /hsv_grasp/locked_object_point
+point_topic_timeout: 2.0
+point_topic_semantic: top_center
+cube_size: 0.055
+
+gripper_topic: /right_arm/Robotiq2FGripperRobotOutput
+gripper_preview_topic: /right_gripper/preview_command
+gripper_status_topic: /right_arm/Robotiq2FGripperRobotInput
+robot_program_topic: /right_arm/ur_hardware_interface/robot_program_running
+
+# Automatically selected from the current locked live target.  The failed
+# tilt_35_roll_0 pose put the two fingers at unequal heights.  The replacement
+# tilt_40_roll_270 pose keeps the finger-opening axis close to horizontal and
+# has the lowest accepted total joint motion (3.8436 rad).
+orientation_quaternion: [-0.0189564460, 0.9436495767, -0.1063103131, 0.3128326179]
+approach_vector: [0.0, 0.0, -1.0]
+
+# Targets are Robotiq grasp-centre (TCP) poses.  Convert them to tool0 using
+# the measured/modelled 130 mm local-Z offset, including the selected tilt.
+pose_target_is_tcp: true
+tcp_offset_from_end_effector: [0.0, 0.0, 0.130]
+tool_to_grasp_center: 0.0
+
+# Close in the upper half of the cube, descend from 200 mm above, then lift
+# 120 mm, translate 80 mm along +Y, release, and return to the recorded start.
+# This reproduces the confirmed successful close point z=0.265727 m:
+# detected top face 0.273227 - half cube 0.0275 + offset 0.020.
+target_offset: [0.0, 0.0, 0.020]
+pre_grasp_clearance: 0.200
+post_grasp_lift: [0.0, 0.0, 0.120]
+post_grasp_shift: [0.0, 0.080, 0.0]
+
+# Recorded at the beginning of the successful 2026-08-21 grasp cycle.
+# Joint order is the MoveIt right_arm active-joint order (shoulder_pan ... wrist_3).
+initial_joint_target: [3.7318120003, -1.5940335433, -1.8345826308, -1.1906345526, 0.1394038796, 1.6522442102]
+# A full task now means: grasp -> lift -> shift -> release -> return here.
+release_after_shift: true
+return_to_initial_after_success: true
+
+velocity_scaling: 0.05
+acceleration_scaling: 0.05
+planning_time: 8.0
+num_planning_attempts: 10
+planner_id: RRTConnect
+plan_retries: 10
+# Reject stochastic MoveIt solutions that wind continuous joints around or
+# would take too long to reach the pre-grasp pose.
+max_pregrasp_duration: 35.0
+max_pregrasp_joint_motion: 7.0
+display_pause_seconds: 0.5
+goal_position_tolerance: 0.008
+goal_orientation_tolerance: 0.06
+
+target_sample_count: 5
+target_timeout: 8.0
+target_max_spread: 0.006
+target_max_shift: 0.010
+# The selected overhead hover places the right gripper between the fixed camera
+# and cube. Lock the pre-approach stable target instead of requiring visibility
+# after the arm reaches hover; the hover pose itself is still checked to 12 mm.
+recheck_target_before_descent: false
+tf_timeout: 0.5
+target_bounds:
+  x: [0.459749, 0.741749]
+  y: [-0.452145, -0.002145]
+  z: [0.245, 0.290]
+hover_position_tolerance: 0.012
+
+cartesian_step: 0.003
+cartesian_min_fraction: 0.995
+require_grasp_detection: true
+grasp_detection_timeout: 3.0
+failure_retreat_distance: 0.080
+failure_lift_distance: 0.080
+
+open_position: 0
+close_position: 210
+gripper_speed: 80
+gripper_force: 80
+gripper_settle_seconds: 1.0

@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- ChArUco hand-eye calibration for right UR3 and external RealSense camera2. -->
+  <arg name="start_cameras" default="false"/>
+  <arg name="start_robot" default="false"/>
+  <arg name="start_moveit" default="true"/>
+  <arg name="start_rviz" default="true"/>
+  <arg name="start_detection_view" default="true"/>
+  <arg name="moveit_controller_manager" default="simple_right"/>
+  <arg name="rviz_start_delay" default="3.0"/>
+  <arg name="detection_view_start_delay" default="5.0"/>
+  <arg name="detection_view_topic" default="/handeye_calibration/target_detection"/>
+
+  <arg name="camera2_info_yaml"
+       default="/home/gzu/gzu_ws/calibration/realsense_intrinsics/camera_912112073732_20260611_135007/ost.yaml"/>
+  <arg name="camera2_serial_no" default="912112073732"/>
+  <arg name="camera2_image_topic" default="/camera2/color/image_raw"/>
+  <arg name="camera2_raw_info_topic" default="/camera2/color/camera_info"/>
+  <arg name="camera2_calibrated_info_topic" default="/camera2/color/camera_info_calibrated"/>
+  <arg name="camera2_frame" default="camera2_color_optical_frame"/>
+  <arg name="camera2_lock_color_settings" default="true"/>
+  <arg name="camera2_color_exposure" default="250"/>
+  <arg name="camera2_color_gain" default="16"/>
+  <arg name="camera2_color_white_balance" default="4600"/>
+
+  <arg name="rviz_config"
+       default="$(find dual_arm_tasks)/rviz/right_arm_camera2_eye_on_base_charuco.rviz"/>
+
+  <group if="$(arg start_cameras)">
+    <!-- Calibration only needs camera2.  Starting both cameras here can replace an
+         already-running /camera node and is unrelated to right-arm calibration. -->
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+      <arg name="camera" value="camera2"/>
+      <arg name="tf_prefix" value="camera2"/>
+      <arg name="serial_no" value="$(arg camera2_serial_no)"/>
+      <arg name="align_depth" value="true"/>
+      <arg name="enable_sync" value="true"/>
+      <arg name="enable_pointcloud" value="true"/>
+      <arg name="pointcloud_texture_stream" value="RS2_STREAM_COLOR"/>
+    </include>
+    <group if="$(arg camera2_lock_color_settings)">
+      <node pkg="dual_arm_tasks"
+            type="set_realsense_color_manual.py"
+            name="camera2_manual_color_settings"
+            output="screen">
+        <param name="server" value="/camera2/rgb_camera"/>
+        <param name="exposure" value="$(arg camera2_color_exposure)"/>
+        <param name="gain" value="$(arg camera2_color_gain)"/>
+        <param name="white_balance" value="$(arg camera2_color_white_balance)"/>
+      </node>
+    </group>
+  </group>
+
+  <group if="$(arg start_robot)">
+    <include file="$(find ur_robot_driver)/launch/ur3_dual_bringup.launch">
+      <arg name="start_left_arm" value="false"/>
+      <arg name="start_right_arm" value="true"/>
+    </include>
+  </group>
+
+  <node pkg="dual_arm_tasks"
+        type="camera_info_from_yaml_publisher.py"
+        name="camera2_calibrated_camera_info"
+        output="screen">
+    <param name="camera_info_yaml" value="$(arg camera2_info_yaml)"/>
+    <param name="source_camera_info_topic" value="$(arg camera2_raw_info_topic)"/>
+    <param name="output_camera_info_topic" value="$(arg camera2_calibrated_info_topic)"/>
+    <param name="frame_id" value="$(arg camera2_frame)"/>
+  </node>
+
+  <group if="$(arg start_moveit)">
+    <include file="$(find ur3_dual_moveit_config)/launch/move_group.launch">
+      <arg name="load_robot_description" value="true"/>
+      <arg name="moveit_controller_manager" value="$(arg moveit_controller_manager)"/>
+    </include>
+  </group>
+
+  <group if="$(arg start_rviz)">
+    <node pkg="rviz"
+          type="rviz"
+          name="right_arm_camera2_eye_on_base_charuco_rviz"
+          args="-d $(arg rviz_config)"
+          launch-prefix="bash -c 'sleep $(arg rviz_start_delay); exec &quot;$@&quot;' _"
+          output="screen"/>
+  </group>
+
+  <group if="$(arg start_detection_view)">
+    <node pkg="image_view"
+          type="image_view"
+          name="right_arm_camera2_charuco_detection_view"
+          args="image:=$(arg detection_view_topic)"
+          launch-prefix="bash -c 'sleep $(arg detection_view_start_delay); exec &quot;$@&quot;' _"
+          output="screen"/>
+  </group>
+</launch>
