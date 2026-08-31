@@ -1,0 +1,134 @@
+# Three blue blocks -> three checkerboard positions, right real arm.
+# Real execution intentionally stays locked until one physical checker square is confirmed.
+enabled: true
+
+arm_group: right_arm
+planning_frame: base
+end_effector_link: right_arm_tool0
+object_topic: /hsv_grasp/blue_object_points_base
+place_topic: /hsv_grasp/checkerboard_place_points_base
+robot_program_topic: /right_arm/ur_hardware_interface/robot_program_running
+gripper_topic: /right_arm/Robotiq2FGripperRobotOutput
+gripper_preview_topic: /right_gripper/preview_command
+gripper_status_topic: /right_arm/Robotiq2FGripperRobotInput
+
+# Start with the conventional top-down grasp/release pose (tool Z points
+# vertically toward the table).  Tilted poses are fallbacks only after this
+# standard pose has been shown infeasible for a particular target.
+orientation_quaternion: [0.7071067812, 0.7071067812, 0.0, 0.0]
+place_orientation_quaternion: [0.7071067812, 0.7071067812, 0.0, 0.0]
+# Blocks 1 and 2 are elongated cuboids.  Keep tool Z vertical but rotate about
+# it so tool X follows the detected long edge; Robotiq closes along tool Y and
+# therefore contacts the two larger long side faces.  Block 3 is the cube.
+align_long_axis_object_indices: [0, 1]
+long_axis_yaw_offset_deg: 0.0
+# Use the standard top-down cube pose that succeeded on the previous day.
+# The cube centre is unmodified by the bar-specific pixel corrections.
+tilted_grasp_object_indices: []
+# Archived 2026-08-21 successful low-table cube grasp.  This exact fixed 40deg
+# quaternion was validated on the real cube and is different from today's
+# generated 15deg radial tilt.  Bars 1/2 keep their detected long-axis poses.
+fixed_grasp_orientation_quaternions:
+  - null
+  - null
+  - [-0.0189564460, 0.9436495767, -0.1063103131, 0.3128326179]
+joint_planned_grasp_object_indices: []
+grasp_outward_tilt_candidates_deg: [15.0, 25.0, 40.0]
+tilted_grasp_plan_retries: 2
+tilted_grasp_planning_time: 3.0
+object_axis_inlier_deg: 10.0
+object_axis_max_mad_deg: 3.0
+execute_object_axis_max_shift_deg: 8.0
+pose_target_is_tcp: true
+tcp_offset_from_end_effector: [0.0, 0.0, 0.130]
+approach_vector: [0.0, 0.0, -1.0]
+tool_to_grasp_center: 0.0
+
+grasp_above_center: 0.020
+# Keep the held object's bottom at least 50 mm above the checkerboard, and keep
+# the gripper TCP itself at least 120 mm above it.  The explicit TCP clearance
+# implements the 2026-08-23 requirement that the gripper release height remain
+# more than 100 mm above the table.
+release_clearance: 0.050
+release_tcp_clearance: 0.120
+pre_pick_clearance: 0.180
+lift_distance: 0.140
+pre_place_clearance: 0.150
+# Move directly to the high release pose and open there.  This removes the
+# downward placement segment that previously brought the gripper toward the
+# tabletop; after release the arm only retreats upward.
+direct_high_release: true
+# 2026-08-23: plan all three objects as one continuous task.  Real execution is
+# still gated by a fresh three-object lock, complete plan-only success, live
+# target validation, and explicit operator confirmation.
+# Lock all three visible blocks once before planning.  The complete sequential
+# execution uses exactly those three coordinates because the overhead camera
+# can be occluded by the arm after motion begins.  No target is reacquired or
+# changed during the 1 -> 2 -> 3 pick/place sequence.
+max_blocks: 3
+active_object_indices: [0, 1, 2]
+placement_indices: [0, 1, 2]
+refresh_target_after_each_completed_pick: false
+use_locked_scene_without_live_revalidation: true
+per_pick_lock_sample_count: 30
+per_pick_lock_timeout: 12.0
+per_pick_association_radius: 0.080
+# The fixed vertical high-release pose has no IK at the checkerboard side.
+# Use the previously verified reachable outward tilt, while still moving
+# directly to the point 120 mm above the board and never descending to place.
+place_orientation_mode: outward_tilt
+place_vertical_tool_x_yaw_candidates_deg: [90.0, 0.0, 180.0, -90.0, 45.0, 135.0, -45.0, -135.0]
+place_vertical_plan_retries: 2
+place_vertical_planning_time: 2.5
+place_outward_tilt_deg: 40.0
+place_roll_deg: 0.0
+object_height_bounds: [0.015, 0.080]
+
+initial_joint_target: [3.7318120003, -1.5940335433, -1.8345826308, -1.1906345526, 0.1394038796, 1.6522442102]
+velocity_scaling: 0.05
+acceleration_scaling: 0.05
+planning_time: 6.0
+num_planning_attempts: 12
+planner_id: RRTConnect
+plan_retries: 12
+max_pregrasp_duration: 12.0
+max_pregrasp_joint_motion: 7.0
+# Reject long wrist-wrap detours at every free-space pose target.  A 25-degree
+# release test produced a formally valid but unsafe 50.67 s / 29.25 rad path.
+max_pose_duration: 12.0
+max_pose_joint_motion: 7.0
+display_pause_seconds: 0.15
+goal_position_tolerance: 0.008
+goal_orientation_tolerance: 0.06
+cartesian_step: 0.003
+cartesian_min_fraction: 0.995
+# High transit poses remain far above the table; allow the observed controller
+# settling error there so it can proceed to the precise Cartesian descent.
+# The final block grasp tolerance stays strict at 8 mm below.
+actual_tcp_max_error: 0.020
+actual_grasp_tcp_max_error: 0.008
+
+lock_sample_count: 40
+lock_timeout: 15.0
+tf_timeout: 0.5
+object_inlier_radius: 0.012
+place_inlier_radius: 0.006
+min_inlier_ratio: 0.70
+object_max_mad: 0.005
+place_max_mad: 0.002
+execute_object_max_shift: 0.012
+execute_place_max_shift: 0.008
+
+checkerboard_square_size_m: 0.0227
+checkerboard_square_size_confirmed: false
+
+require_grasp_detection: true
+grasp_detection_timeout: 3.0
+open_position: 0
+close_position: 255
+gripper_speed: 120
+gripper_force: 80
+gripper_settle_seconds: 1.0
+gripper_reset_duration: 1.0
+gripper_reset_settle: 0.5
+gripper_activate_duration: 2.0

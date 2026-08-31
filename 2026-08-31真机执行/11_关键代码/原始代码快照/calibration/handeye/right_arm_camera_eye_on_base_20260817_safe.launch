@@ -1,0 +1,18 @@
+<launch>
+  <!--
+    Runtime-safe form of /home/gzu/gzu_ws/2026-8-17<0.00929.launch.
+
+    The calibration was solved for:
+      right_arm_base -> camera_color_optical_frame
+      xyz  = [-0.566325, 0.258012, -0.269924]
+      xyzw = [-0.358932, 0.136223, -0.376358, 0.843188]
+
+    The running single RealSense already owns camera_color_optical_frame under
+    camera_link.  Therefore this launch publishes the equivalent transform to
+    camera_link and leaves the driver's internal TF tree intact.
+  -->
+  <node pkg="tf2_ros"
+        type="static_transform_publisher"
+        name="right_arm_camera_eye_on_base_20260817_broadcaster"
+        args="-0.556276094397 0.247522514856 -0.269264299368 0.123534986728 -0.363395366351 0.344525344370 0.856729363251 right_arm_base camera_link" />
+</launch>

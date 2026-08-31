@@ -1,0 +1,9 @@
+<!-- 声明这是一个 ROS launch 文件的根元素。 -->
+<launch>
+  <!-- 说明下方节点只发布固定不变的坐标变换。 -->
+  <!-- 平移单位是米，四元数顺序是 x y z w。 -->
+  <!-- pkg 选择 tf2_ros；type 选择静态 TF 发布程序；name 是唯一节点名。 -->
+  <!-- args 依次为 xyz、xyzw、父坐标系 right_arm_base、子坐标系 camera_link。 -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="right_arm_camera_eye_on_base_20260817_broadcaster_annotated" args="-0.556276094397 0.247522514856 -0.269264299368 0.123534986728 -0.363395366351 0.344525344370 0.856729363251 right_arm_base camera_link" />
+  <!-- 结束 ROS launch 根元素。 -->
+</launch>

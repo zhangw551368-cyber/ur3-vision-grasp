@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="calibration_launch"
+       default="/home/gzu/gzu_ws/calibration/handeye/right_arm_camera_eye_on_base_20260817_safe.launch"/>
+  <arg name="input_topic" default="/hsv_grasp/object_point_camera"/>
+  <arg name="output_topic" default="/hsv_grasp/object_point_base"/>
+
+  <!-- Exactly one base-to-camera calibration publisher may run. -->
+  <include file="$(arg calibration_launch)"/>
+  <include file="$(find dual_arm_tasks)/launch/hsv_object_to_base.launch">
+    <arg name="input_topic" value="$(arg input_topic)"/>
+    <arg name="output_topic" value="$(arg output_topic)"/>
+    <arg name="expected_input_frame" value="camera_color_optical_frame"/>
+    <arg name="target_frame" value="right_arm_base"/>
+  </include>
+</launch>
