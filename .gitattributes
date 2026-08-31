@@ -1,0 +1,9 @@
+# Calibration printouts and robot mesh assets are binary even when their
+# internal encoding contains long ASCII sections.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.stl binary
+*.STL binary
+*.dae binary

@@ -61,6 +61,7 @@ catkin_install_python(PROGRAMS
   scripts/camera2_aruco_cube_pose.py
   scripts/set_realsense_color_manual.py
   scripts/publish_real_environment_scene.py
+  scripts/verify_real_workcell.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="config" default="$(find ur3_graspnet6dof_20260824)/config/right_arm_green_table.yaml"/>
+  <node pkg="ur3_graspnet6dof_20260824"
+        type="graspnet_inference_node.py"
+        name="ur3_graspnet6d_inference"
+        output="screen"
+        required="true"
+        args="--config $(arg config)"/>
+</launch>
+

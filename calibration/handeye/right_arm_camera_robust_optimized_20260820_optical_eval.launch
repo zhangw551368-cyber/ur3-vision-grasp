@@ -1,0 +1,7 @@
+<launch>
+  <!-- Offline evaluation only: do not publish while the RealSense TF tree is running. -->
+  <node pkg="tf2_ros"
+        type="static_transform_publisher"
+        name="right_arm_camera_robust_optimized_20260820_optical_eval"
+        args="-0.578006038450785 0.24075302539047325 -0.2548474955072508 -0.3638659936984924 0.14942649623019183 -0.3777218076839188 0.8382120834575041 right_arm_base camera_color_optical_frame" />
+</launch>

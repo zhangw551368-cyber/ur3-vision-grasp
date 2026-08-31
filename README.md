@@ -1,6 +1,24 @@
-# UR3 Dual-Arm Vision Pick-and-Place — 2026-08-23 Baseline
+# UR3 双臂视觉抓取与真实工作站恢复
 
-这是双 UR3 平台右臂三蓝色物块连续视觉抓放任务的可复现备份。仓库基线对应 2026-08-23 实机成功运行：三个物块全部抓取，在棋盘格上方高位松开，最后返回右臂初始位。
+这是双 UR3 平台从驱动、MoveIt、RealSense、手眼标定、Robotiq 到真实机柜/绿桌 PlanningScene 的可恢复工作站，同时保留 2026-08-23 三蓝块和 2026-08-24 GraspNet 多样工件实机结果。
+
+## 新电脑最短恢复路径
+
+前提是 Ubuntu 20.04、ROS Noetic 和实验室硬件/网络已经准备好：
+
+```bash
+git clone git@github.com:zhangw551368-cyber/ur3-vision-grasp.git
+cd ur3-vision-grasp
+bash scripts/restore_workspace.sh
+bash scripts/check_hardware_connections.sh
+bash scripts/start_real_workcell.sh
+```
+
+统一入口会连接双 UR3、RealSense 和右 Robotiq，启动 MoveIt、运行安全版手眼 TF、RViz，并自动加入实机机柜与最新绿桌碰撞体。它不会自动执行抓取轨迹。
+
+完整的新电脑网络、URCap、编译、启动和验证步骤见：
+
+- [`docs/NEW_PC_DEPLOYMENT_20260831_zh.md`](docs/NEW_PC_DEPLOYMENT_20260831_zh.md)
 
 ## 2026-08-31 真机执行归档
 
@@ -34,12 +52,16 @@ ur3-dual-arm-vision-pick-place-20260823
 | `src/ur_description` | 双 UR3 URDF/Xacro、网格和双 Robotiq 装配模型 |
 | `src/ur_robot_driver` | 当前实机使用的 UR ROS Driver 及定制双臂 bringup |
 | `src/robotiq` | Robotiq 2F 串口控制、消息和可视化模型 |
+| `src/ur3_graspnet6dof_20260824` | GraspNet 多样工件轻量源码、独立环境和 checkpoint 下载脚本 |
 | `calibration/environment` | 桌面/机柜环境、2026-08-23 三目标锁点及历史对照 YAML |
+| `calibration/handeye` | 2026-08-17 运行安全版外参、8 月 20 日训练/验证样本与离线候选结果 |
+| `calibration/charuco_print` | 本次标定板 PNG、100% 原尺寸 PDF 和打印检查说明 |
+| `config/lab_hardware.env` | 实验室电脑、左右 UR3 和右夹爪设备默认值 |
 | `docs` | 2026-08-21～22 汇总和 2026-08-23 最终成功记录 |
 | `dependencies` | 操作系统、ROS、Python 与关键软件包版本基线 |
-| `scripts` | 新机器恢复和构建脚本 |
+| `scripts` | 新机器恢复、硬件预检、统一启动和运行验证脚本 |
 
-未上传的内容包括 `build/`、`devel/`、ROS 日志、视频、RGB-D 原始帧、大型训练数据和 Python 缓存。这些内容可重建或体积过大，不是复现昨天任务所必需。
+未上传的内容包括 `build/`、`devel/`、ROS 日志、视频、RGB-D 原始帧、大型训练数据、GraspNet Conda/CUDA 环境、checkpoint、第三方仓库、历史轨迹缓存和 Python 缓存。这些内容可重建、可下载或不应跨场景执行。
 
 ## 成功运行摘要
 
@@ -59,13 +81,13 @@ REAL EXECUTION complete: 3 block(s), 16 motion segments
 - `docs/right_arm_three_blue_pick_place_success_20260823_zh.md`
 - `docs/right_arm_real_environment_three_blue_pick_place_complete_20260821_22_zh.md`
 
-## 新机器恢复
+## 新机器恢复（详细版）
 
 目标系统建议与原机一致：Ubuntu 20.04 + ROS Noetic。
 
 ```bash
-git clone <YOUR_REPOSITORY_URL> ~/ur3-dual-arm-vision-pick-place-20260823
-cd ~/ur3-dual-arm-vision-pick-place-20260823
+git clone git@github.com:zhangw551368-cyber/ur3-vision-grasp.git
+cd ur3-vision-grasp
 bash scripts/restore_workspace.sh
 ```
 
@@ -76,6 +98,20 @@ bash scripts/restore_workspace.sh
 ```bash
 source /opt/ros/noetic/setup.bash
 source devel/setup.bash
+```
+
+建立整套实机连接和碰撞空间：
+
+```bash
+bash scripts/check_hardware_connections.sh
+bash scripts/start_real_workcell.sh
+```
+
+另开终端执行只读验证：
+
+```bash
+cd ur3-vision-grasp
+bash scripts/verify_running_workcell.sh
 ```
 
 ## 规划与实机执行

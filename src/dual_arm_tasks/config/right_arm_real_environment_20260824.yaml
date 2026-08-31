@@ -1,0 +1,66 @@
+# Latest real-workcell collision geometry verified in RViz on 2026-08-24.
+# Units: metres and radians. Pose order: [x, y, z, roll, pitch, yaw].
+# This is the deployment default. The 2026-08-22 file remains for historical
+# reproduction of the HSV three-blue-block experiment only.
+
+scene_id: right_arm_lab_20260824
+frame_id: base
+require_measured: true
+dry_run: false
+remove_only: false
+scene_timeout: 30.0
+
+objects:
+  # Measured cabinet, including the 1.500 m extension toward base -Y.
+  # Bounds: x=[-0.8275, 0.1525], y=[-1.7330, 1.0270],
+  # z=[-0.8050, -0.0100].
+  - name: support_cabinet
+    type: box
+    enabled: true
+    measured: true
+    pose: [-0.3375, -0.3530, -0.4075, 0.0, 0.0, 0.0]
+    size: [0.9800, 2.7600, 0.7950]
+    color: [0.20, 0.42, 0.72, 1.00]
+    note: "Measured cabinet; top surface is base z=-0.010 m."
+
+  # Corrected green table proxy from the 2026-08-24 RGB-D/TF/RViz audit.
+  # The long 1.200 m side is base X and the 0.900 m side is base Y.
+  # A 20 mm downward slab places the collision top at base z=-0.010 m.
+  - name: green_cloth_work_surface
+    type: box
+    enabled: true
+    measured: true
+    pose: [0.7800, -0.3400, -0.0200, 0.0, 0.0, 0.0]
+    size: [1.2000, 0.9000, 0.0200]
+    color: [0.04, 0.62, 0.12, 1.00]
+    note: "Corrected 1200 x 900 mm green work surface; top base z=-0.010 m."
+
+  # Disabled until the physical table underbody has been conservatively measured.
+  - name: replacement_table_underbody_keepout
+    type: box
+    enabled: false
+    measured: false
+    pose: [0.7800, -0.3400, -0.3900, 0.0, 0.0, 0.0]
+    size: [1.2000, 0.9000, 0.7400]
+    color: [0.90, 0.15, 0.15, 0.30]
+    note: "Disabled placeholder; do not approve trajectories under the table."
+
+  # Disabled until the camera stand/boom envelope has been measured.
+  - name: camera_stand_keepout
+    type: box
+    enabled: false
+    measured: false
+    pose: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    size: [0.10, 0.10, 0.10]
+    color: [0.12, 0.12, 0.12, 1.00]
+    note: "TODO: measure fixed camera stand and boom."
+
+  # Disabled until cables and hoses have a measured conservative keepout volume.
+  - name: cable_keepout
+    type: box
+    enabled: false
+    measured: false
+    pose: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    size: [0.10, 0.10, 0.10]
+    color: [0.90, 0.15, 0.15, 0.45]
+    note: "TODO: define a conservative cable and hose keepout."

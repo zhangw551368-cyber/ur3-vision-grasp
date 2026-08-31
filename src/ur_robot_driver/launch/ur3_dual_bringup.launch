@@ -2,8 +2,11 @@
 <launch>
   <arg name="left_arm_kinematics_config" default="$(find ur_robot_driver)/config/left_arm_ur3_calibration.yaml"/>
   <arg name="right_arm_kinematics_config" default="$(find ur_robot_driver)/config/right_arm_ur3_calibration.yaml"/>
+  <arg name="left_robot_ip" default="192.168.1.43"/>
+  <arg name="right_robot_ip" default="192.168.1.44"/>
   <arg name="start_left_arm" default="true"/>
   <arg name="start_right_arm" default="true"/>
+  <arg name="headless_mode" default="false"/>
   <include file="$(find ur_description)/launch/load_ur3_dual.launch">
     <arg name="left_arm_kinematics_params" value="$(arg left_arm_kinematics_config)"/>
     <arg name="right_arm_kinematics_params" value="$(arg right_arm_kinematics_config)"/>
@@ -15,7 +18,7 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen"/>
   <group ns="right_arm" if="$(arg start_right_arm)">
     <node name="ur_hardware_interface" pkg="ur_robot_driver" type="ur_robot_driver_node" output="screen">
-      <param name="robot_ip" value="192.168.1.44"/>
+      <param name="robot_ip" value="$(arg right_robot_ip)"/>
       <param name="reverse_port" value="50001"/>
       <param name="script_sender_port" value="50002"/>
       <param name="trajectory_port" value="50003"/>
@@ -24,7 +27,7 @@
       <param name="script_file" value="$(find ur_client_library)/resources/external_control.urscript"/>
       <param name="output_recipe_file" value="$(find ur_robot_driver)/resources/rtde_output_recipe.txt"/>
       <param name="input_recipe_file" value="$(find ur_robot_driver)/resources/rtde_input_recipe.txt"/>
-      <param name="headless_mode" value="false"/>
+      <param name="headless_mode" value="$(arg headless_mode)"/>
       <param name="tf_prefix" value="right_arm_"/>
       <param name="use_tool_communication" value="false"/>
       <param name="servoj_gain" value="2000"/>
@@ -35,7 +38,7 @@
   </group>
   <group ns="left_arm" if="$(arg start_left_arm)">
     <node name="ur_hardware_interface" pkg="ur_robot_driver" type="ur_robot_driver_node" output="screen">
-      <param name="robot_ip" value="192.168.1.43"/>
+      <param name="robot_ip" value="$(arg left_robot_ip)"/>
       <param name="reverse_port" value="40001"/>
       <param name="script_sender_port" value="40002"/>
       <param name="trajectory_port" value="40003"/>
@@ -44,7 +47,7 @@
       <param name="script_file" value="$(find ur_client_library)/resources/external_control.urscript"/>
       <param name="output_recipe_file" value="$(find ur_robot_driver)/resources/rtde_output_recipe.txt"/>
       <param name="input_recipe_file" value="$(find ur_robot_driver)/resources/rtde_input_recipe.txt"/>
-      <param name="headless_mode" value="false"/>
+      <param name="headless_mode" value="$(arg headless_mode)"/>
       <param name="tf_prefix" value="left_arm_"/>
       <param name="use_tool_communication" value="false"/>
       <param name="servoj_gain" value="2000"/>

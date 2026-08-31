@@ -1,0 +1,37 @@
+frames:
+  base_frame: right_arm_base
+  tool_frame: right_arm_tool0
+  camera_frame: camera_color_optical_frame
+  target_frame: handeye_target
+method: evaluate_fixed_base_to_camera
+base_to_camera_launch: /home/gzu/gzu_ws/2026-8-17<0.00929.launch
+static_transform_parent: right_arm_base
+static_transform_child: camera2_color_optical_frame
+sample_count: 15
+base_to_camera:
+  translation:
+  - -0.566325
+  - 0.258012
+  - -0.269924
+  quaternion_xyzw:
+  - -0.35893195802990907
+  - 0.13622298407137926
+  - -0.37635795599227856
+  - 0.8431879014056229
+estimated_tool_to_target:
+  translation:
+  - 0.05397611816777757
+  - -0.006593394250379517
+  - 0.21198492431820545
+  quaternion_xyzw:
+  - -0.48181098246987386
+  - 0.5174457650259083
+  - -0.4999891486026988
+  - -0.5001188945717969
+error_summary:
+  rotation_rad_mean: 0.01917822608900294
+  rotation_rad_max: 0.03258674132121394
+  rotation_deg_mean: 1.0988314134475556
+  rotation_deg_max: 1.867082745790123
+  translation_m_mean: 0.00783422835737112
+  translation_m_max: 0.013839035842608803

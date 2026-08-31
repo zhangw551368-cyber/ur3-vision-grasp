@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="calibration_launch"
-       default="/home/gzu/gzu_ws/calibration/handeye/right_arm_camera_eye_on_base_20260817_safe.launch"/>
+       default="$(find dual_arm_tasks)/launch/right_arm_camera_eye_on_base_20260817_safe.launch"/>
   <arg name="input_topic" default="/hsv_grasp/object_point_camera"/>
   <arg name="output_topic" default="/hsv_grasp/object_point_base"/>
 

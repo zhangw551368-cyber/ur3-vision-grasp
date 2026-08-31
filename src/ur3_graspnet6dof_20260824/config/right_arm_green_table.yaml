@@ -1,0 +1,384 @@
+# Isolated GraspNet + right UR3 configuration for the green work surface.
+# Units are metres, radians, seconds, and ROS image pixels unless stated.
+
+project:
+  name: ur3_graspnet6dof_20260824
+  schema_version: 1
+
+paths:
+  checkpoint: checkpoints/checkpoint-rs.tar
+  checkpoint_sha256: 60680087c61cba2b6791614fef1519071e294f6dcaf99b3f581bb95f7c51a868
+  graspnet_baseline: third_party/graspnet-baseline
+  graspnet_api: third_party/graspnetAPI
+  runtime_dir: runtime
+
+camera:
+  color_topic: /camera/color/image_raw
+  depth_topic: /camera/aligned_depth_to_color/image_raw
+  camera_info_topic: /camera/color/camera_info
+  expected_frame: camera_color_optical_frame
+  sync_slop: 0.08
+  sync_queue_size: 10
+  frame_timeout: 8.0
+  min_depth_m: 0.20
+  max_depth_m: 1.20
+  # Normalized [x_min, y_min, x_max, y_max]. This is the deliberately bounded
+  # central pick zone (about 448:896 x 101:490 at 1280x720). It contains all
+  # pictured parts while excluding the machine frame and known stereo ghosts.
+  roi_normalized: [0.35, 0.14, 0.70, 0.68]
+
+network:
+  num_point: 20000
+  num_view: 300
+  # Class-agnostic RGB-D foreground. Points must be physically above the
+  # calibrated table; no object colour or Kinect workspace mask is required.
+  foreground_min_height: 0.010
+  foreground_max_height: 0.150
+  # Small reflective hardware yields sparse but valid aligned-depth points.
+  # Sampling is with replacement; later geometric/collision filters remain strict.
+  min_foreground_points: 50
+  collision_thresh: 0.01
+  collision_voxel_size: 0.01
+  collision_approach_dist: 0.05
+  publish_top_n: 50
+  inference_cooldown: 0.5
+  # Plane fitting is diagnostic and is also checked by the selector.
+  fit_support_plane: true
+  plane_distance_threshold: 0.004
+  plane_num_iterations: 500
+
+ros:
+  namespace: /ur3_graspnet6d
+  candidates_json_topic: /ur3_graspnet6d/candidates_json
+  candidates_pose_topic: /ur3_graspnet6d/candidates_camera
+  best_grasp_camera_topic: /ur3_graspnet6d/best_grasp_camera
+  marker_topic: /ur3_graspnet6d/candidate_markers
+  valid_topic: /ur3_graspnet6d/valid
+  status_topic: /ur3_graspnet6d/status
+  inference_service: /ur3_graspnet6d/infer
+
+selector:
+  planning_frame: base
+  tf_timeout: 1.0
+  max_candidate_age: 5.0
+  min_score: 0.05
+  min_gripper_width: 0.008
+  max_gripper_width: 0.080
+  # First real tests are overhead/near-overhead only. Increase gradually only
+  # after the camera stand and cables have collision geometry.
+  max_approach_tilt_deg: 30.0
+  min_height_above_plane: 0.008
+  max_height_above_plane: 0.150
+  require_support_plane: true
+  # Current 2026-08-24 RGB-D + calibrated TF observes the green plane near
+  # z=-0.008 m at the conservative workspace centre. The older collision
+  # scene proxy is lower and is supplemented by the isolated dynamic guard.
+  support_plane_z: -0.010
+  support_plane_z_tolerance: 0.050
+  # Conservative reachable part of the measured 0.9 x 1.2 m green surface.
+  workspace_bounds:
+    x: [0.20, 0.72]
+    y: [-0.62, -0.04]
+    z: [-0.060, 0.160]
+  max_candidates_to_plan: 20
+  try_opening_axis_flip: true
+
+safety_scene:
+  # The isolated reconciliation step raises the existing measured tabletop to
+  # the live RGB-D support height, so a second overlapping guard is unnecessary.
+  enabled: false
+  object_id: ur3_graspnet6d_20260824__observed_green_surface_guard
+  # Exactly cover selector.workspace_bounds in XY, not the entire lab.
+  center_xy: [0.46, -0.33]
+  size_xy: [0.52, 0.58]
+  thickness: 0.015
+  update_timeout: 3.0
+
+scene_reconciliation:
+  enabled: true
+  source_object_id: right_arm_lab_20260821__green_cloth_work_surface
+  obsolete_guard_id: ur3_graspnet6d_20260824__observed_green_surface_guard
+  # The shared 2026-08-22 proxy transposed the measured 1200 x 900 mm edges.
+  # Live RGB boundary rays place the cabinet-side edge near base x=0.18 and
+  # the near edge near base y=0.11, so the long table axis is base X.
+  expected_source_size: [0.900, 1.200, 0.020]
+  corrected_size: [1.200, 0.900, 0.020]
+  corrected_center_xy: [0.780, -0.340]
+  corrected_yaw: 0.0
+  expected_old_top_z: -0.055
+  corrected_top_z: -0.010
+  tolerance: 0.003
+  color: [0.04, 0.62, 0.12, 1.00]
+
+sequence:
+  object_order:
+    - horizontal_cylinder
+    - upright_silver_cylinder
+    - upright_rivet_x_axis
+    - metal_flange
+    - metal_disc
+    - large_ring
+    - upright_rivet
+    - silver_bolt
+    - large_washer
+    - nut_or_washer
+    - blue_cutters
+    - yellow_pliers
+  target_radius:
+    upright_silver_cylinder: 55
+    upright_rivet_x_axis: 38
+    silver_bolt: 75
+    nut_or_washer: 48
+    black_connector: 52
+    large_ring: 68
+    yellow_pliers: 82
+    blue_cutters: 88
+    metal_flange: 78
+    metal_disc: 66
+    large_washer: 72
+    upright_rivet: 38
+    horizontal_cylinder: 48
+  board_category: calibration_board
+  # Search samples inside the board. They are not assigned to object classes;
+  # MoveIt may choose any still-free, reachable location for each object.
+  board_candidate_points_normalized:
+    # Dedicated sequence slots in the previously proven central/right reach
+    # band: cylinder, five rivets, then yellow pliers.
+    - [0.48, 0.18]
+    - [0.55, 0.38]
+    - [0.70, 0.38]
+    - [0.85, 0.38]
+    - [0.60, 0.58]
+    - [0.78, 0.58]
+    - [0.88, 0.18]
+    - [0.88, 0.50]
+  board_bbox_inset: 0.10
+  board_depth_window_px: 7
+  release_height_above_board: 0.060
+  max_detection_age: 3.0
+  max_board_candidates_per_object: 1
+  fixed_board_slot_per_object: true
+  # Bounded per-object search used by the sequence planner. These values keep
+  # planning responsive while allowing alternatives to the top network grasp.
+  planning_time_per_attempt: 8.0
+  plan_retries_per_candidate: 3
+  network_candidates_per_object: 3
+  # GraspNet subsamples the live point cloud, so one inference can occasionally
+  # miss an otherwise valid grasp. Retry with fresh RGB-D frames while keeping
+  # exactly the same geometry, collision and class-specific safety filters.
+  inference_retries_per_object: 2
+  # Reflective metal often has too few valid RealSense depth pixels for
+  # GraspNet.  Only after normal RGB-D inference fails, project the classified
+  # RGB centre onto the validated horizontal table and try a conservative
+  # vertical grasp. MoveIt/workspace/table filters remain mandatory.
+  rgb_fallback:
+    categories:
+      upright_silver_cylinder:
+        enabled: true
+        # The operator stood the 80 mm silver cylinder upright. Grip near its
+        # 40 mm mid-height with the same opening proven in the horizontal run.
+        center_height: 0.040
+        gripper_width: 0.028
+        opening_axis_mode: fixed_base
+        opening_axis_base_xy: [0.0, 1.0]
+      upright_rivet_x_axis:
+        enabled: true
+        # Alternate 90-degree wrist orientation for a rivet whose Y-axis
+        # descent is incomplete. Grip 10 mm above mid-height to preserve the
+        # full Cartesian descent at the left edge of the current workspace.
+        center_height: 0.040
+        gripper_width: 0.018
+        opening_axis_mode: fixed_base
+        opening_axis_base_xy: [1.0, 0.0]
+      upright_rivet:
+        enabled: true
+        # Measured height is 60 mm. Grip the upper-middle section so the full
+        # vertical path remains clear when the three rivets are close together.
+        center_height: 0.040
+        gripper_width: 0.018
+        opening_axis_mode: fixed_base
+        opening_axis_base_xy: [0.0, 1.0]
+      horizontal_cylinder:
+        enabled: true
+        # Physical height is 25 mm. Use the upper half so the collision model's
+        # finger pads remain clear of the board/table during descent.
+        center_height: 0.020
+        gripper_width: 0.028
+        opening_axis_mode: perpendicular_to_major
+        opening_axis_base_xy: [0.0, 1.0]
+      yellow_pliers:
+        enabled: true
+        center_height: 0.020
+        gripper_width: 0.050
+        opening_axis_mode: perpendicular_to_major
+        opening_axis_base_xy: [0.0, 1.0]
+      metal_flange:
+        enabled: true
+        center_height: 0.035
+        gripper_width: 0.065
+        opening_axis_mode: fixed_base
+        opening_axis_base_xy: [0.0, 1.0]
+      metal_disc:
+        enabled: true
+        center_height: 0.028
+        gripper_width: 0.055
+        opening_axis_mode: fixed_base
+        opening_axis_base_xy: [0.0, 1.0]
+      large_ring:
+        enabled: true
+        center_height: 0.028
+        gripper_width: 0.065
+        opening_axis_mode: fixed_base
+        opening_axis_base_xy: [0.0, 1.0]
+  grasp_policies:
+    upright_rivet_x_axis:
+      min_gripper_width: 0.008
+      max_gripper_width: 0.030
+      min_height_above_plane: 0.015
+      max_height_above_plane: 0.050
+    upright_silver_cylinder:
+      min_gripper_width: 0.015
+      max_gripper_width: 0.040
+      min_height_above_plane: 0.025
+      max_height_above_plane: 0.065
+    horizontal_cylinder:
+      min_gripper_width: 0.015
+      max_gripper_width: 0.040
+      min_height_above_plane: 0.008
+      max_height_above_plane: 0.030
+    yellow_pliers:
+      min_gripper_width: 0.025
+      max_gripper_width: 0.075
+      min_height_above_plane: 0.008
+      max_height_above_plane: 0.030
+    upright_rivet:
+      # Reject broad network grasps that span table/background rather than the
+      # small cylinder. Reflective-depth fallback uses an 18 mm opening.
+      min_gripper_width: 0.008
+      max_gripper_width: 0.030
+      min_height_above_plane: 0.015
+      max_height_above_plane: 0.050
+    # The upright flange's long image axis maps to base X. Closing across its
+    # short axis grips the two long side faces, so the opening axis must be Y.
+    metal_flange:
+      opening_axis_base_xy: [0.0, 1.0]
+      max_opening_axis_error_deg: 20.0
+      # Live RGB-D profile: about 68 mm tall above the table. Keep the pads on
+      # the middle outer wall and reject narrow centre-bore candidates.
+      min_height_above_plane: 0.025
+      max_height_above_plane: 0.050
+      min_gripper_width: 0.050
+  on_failure: return_initial_and_continue
+
+# Vision-guided assembly target. A convex six-sided contour validates the black
+# aperture. Its complete outer boundary is fitted as an ellipse at several gray
+# thresholds; the median ellipse centre compensates for the oblique camera view
+# and is projected onto the measured tube-top plane for every rivet.
+tube_drop:
+  tube_height: 0.200
+  release_above_opening: 0.030
+  gray_thresholds: [45, 55, 65, 75, 85]
+  aperture_center_min_threshold: 45
+  aperture_center_outlier_px: 5.0
+  min_ellipse_axis_ratio: 0.50
+  min_opening_radius: 0.005
+  max_opening_radius: 0.040
+  circle_center_outlier_m: 0.003
+  polygon_epsilon_ratios: [0.020, 0.025, 0.030, 0.035, 0.040, 0.050]
+  min_polygon_area_px: 180
+  max_polygon_area_px: 2500
+  min_bbox_size_px: 15
+  max_bbox_size_px: 90
+  morphology_kernel_px: 3
+
+# Circular disk placement target. The outer rim is more reliable than any one
+# reflective patch or internal hole. Rim pixels are unprojected to the measured
+# 25 mm top plane before fitting the physical circle centre in base coordinates.
+disk_drop:
+  disk_height: 0.025
+  # The MoveIt finger model needs this clearance over the 25 mm disk. Since the
+  # rivet is held 40 mm above its bottom, its actual free drop is about 30 mm.
+  release_above_center: 0.070
+  median_blur_px: 5
+  min_radius_px: 30
+  max_radius_px: 70
+  hough_edge_threshold: 80
+  hough_accumulator_threshold: 25
+  outer_annulus_inner_ratio: 0.82
+  outer_annulus_outer_ratio: 1.16
+  min_outer_axis_ratio: 0.70
+  max_center_error_ratio: 0.20
+  canny_threshold_pairs: [[20, 60], [30, 90], [40, 120], [50, 150]]
+  min_disk_radius: 0.020
+  max_disk_radius: 0.060
+  # Reject reflective-edge fits whose metric centre differs by over 1.5 mm.
+  circle_center_outlier_m: 0.0015
+
+tool:
+  # GraspNet: +X approach, +Y opening. Robotiq/URDF: tool +Z approach,
+  # tool +Y opening. The executor performs the fixed axis remapping.
+  tcp_offset_from_tool0: 0.130
+  # Current workpieces are flat on a horizontal support. Keep GraspNet's
+  # opening direction but normalize the executed approach to vertical down.
+  force_vertical_approach: true
+  pregrasp_distance: 0.120
+  lift_distance: 0.140
+  # Raise the executed grasp centre 8 mm above GraspNet's surface-level centre.
+  # This preserves strict tabletop collision checking while accounting for the
+  # physical finger pad thickness on flat workpieces.
+  grasp_center_approach_offset: -0.008
+
+moveit:
+  arm_group: right_arm
+  end_effector_link: right_arm_tool0
+  planner_id: RRTConnect
+  planning_time: 6.0
+  planning_attempts: 12
+  plan_retries: 4
+  velocity_scaling: 0.05
+  acceleration_scaling: 0.05
+  goal_position_tolerance: 0.008
+  goal_orientation_tolerance: 0.060
+  cartesian_step: 0.003
+  cartesian_min_fraction: 0.995
+  # At 5% velocity, a collision-free reach from the current high observation
+  # pose legitimately takes tens of seconds. These remain hard rejection caps.
+  max_pose_duration: 90.0
+  max_pose_joint_motion: 10.0
+  display_pause_seconds: 0.20
+
+execution:
+  enabled: false
+  # The operator confirmed this scene remains static. Execution uses only the
+  # frozen plan so arm/camera occlusion cannot affect control flow.
+  recheck_frozen_targets: false
+  segment_settle_seconds: 0.20
+  robot_program_topic: /right_arm/ur_hardware_interface/robot_program_running
+  dashboard_program_running_service: /right_arm/ur_hardware_interface/dashboard/program_running
+  gripper_topic: /right_arm/Robotiq2FGripperRobotOutput
+  gripper_status_topic: /right_arm/Robotiq2FGripperRobotInput
+  open_position: 0
+  close_position: 255
+  gripper_speed: 120
+  gripper_force: 80
+  gripper_settle_seconds: 1.0
+  grasp_detection_timeout: 3.0
+  require_grasp_detection: true
+  # pick_hold stops after a vertical lift while retaining the workpiece.
+  default_mode: pick_hold
+  # Enables drop-path planning only. Real motion remains locked by enabled=false.
+  drop_enabled: true
+  drop_pose_dynamic_from_board: true
+  drop_pose_is_tcp: true
+  # A common vertical-down placement posture is more reachable than carrying
+  # every GraspNet wrist yaw all the way to the checkerboard.
+  drop_keep_grasp_orientation: false
+  drop_pose:
+    frame_id: base
+    position: [0.0, 0.0, 0.0]
+    quaternion: [0.0, 1.0, 0.0, 0.0]
+  # Tube-drop task: approach only 30 mm above the release pose. The held rivet
+  # remains centred over the opening without an unnecessarily high tool0 pose.
+  drop_pre_clearance: 0.030
+  return_to_initial_after_drop: true
+  initial_joint_target: [3.7318120003, -1.5940335433, -1.8345826308, -1.1906345526, 0.1394038796, 1.6522442102]

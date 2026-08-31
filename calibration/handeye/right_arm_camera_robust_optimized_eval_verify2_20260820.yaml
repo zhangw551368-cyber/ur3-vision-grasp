@@ -1,0 +1,37 @@
+frames:
+  base_frame: right_arm_base
+  tool_frame: right_arm_tool0
+  camera_frame: camera_color_optical_frame
+  target_frame: handeye_target
+method: evaluate_fixed_base_to_camera
+base_to_camera_launch: calibration/handeye/right_arm_camera_robust_optimized_20260820_optical_eval.launch
+static_transform_parent: right_arm_base
+static_transform_child: camera_color_optical_frame
+sample_count: 15
+base_to_camera:
+  translation:
+  - -0.578006038450785
+  - 0.24075302539047325
+  - -0.2548474955072508
+  quaternion_xyzw:
+  - -0.3638659936984924
+  - 0.1494264962301918
+  - -0.3777218076839188
+  - 0.8382120834575041
+estimated_tool_to_target:
+  translation:
+  - 0.06316054786677576
+  - -0.0059661901436115754
+  - 0.19293380304685137
+  quaternion_xyzw:
+  - 0.48448646500698284
+  - -0.5089610933758618
+  - 0.5108064779294722
+  - 0.49528599087797
+error_summary:
+  rotation_rad_mean: 0.019064392120768676
+  rotation_rad_max: 0.03755334590944399
+  rotation_deg_mean: 1.092309207502506
+  rotation_deg_max: 2.1516482272060147
+  translation_m_mean: 0.008673090880550063
+  translation_m_max: 0.015612743831818798

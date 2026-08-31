@@ -22,23 +22,32 @@ fi
 
 cd "$repo_root"
 
-# Force catkin_tools to treat this repository as its own workspace even when
-# it is cloned below a directory that is already a catkin workspace.
-mkdir -p "$repo_root/.catkin_tools/profiles"
-
-if [[ ! -e src/CMakeLists.txt ]]; then
-  catkin init --workspace "$repo_root"
+if [[ ! -f /etc/ros/rosdep/sources.list.d/20-default.list ]]; then
+  echo "rosdep has not been initialized; requesting sudo once for rosdep init."
+  sudo rosdep init
+fi
+if ! rosdep update; then
+  echo "WARN: rosdep index update failed; continuing with the explicitly documented Noetic packages." >&2
 fi
 
-rosdep install --from-paths src --ignore-src -r -y
-catkin config --workspace "$repo_root" --extend /opt/ros/noetic --link-devel
+# ROS Noetic is end-of-life and current rosdistro indexes can omit Noetic-only
+# keys such as moveit_commander, realsense2_camera, aruco_ros and easy_handeye.
+# Install every still-resolvable dependency, then let the focused build below
+# report any genuinely missing package. dependencies/README.md lists the
+# required Noetic apt baseline explicitly.
+if ! rosdep install --from-paths src --ignore-src -r -y; then
+  echo "WARN: rosdep could not resolve one or more EOL Noetic keys." >&2
+  echo "WARN: continuing; see dependencies/README.md if the build reports a missing package." >&2
+fi
+catkin config --workspace "$repo_root" --init --extend /opt/ros/noetic --link-devel
 catkin build --workspace "$repo_root" \
   ur_description \
   robotiq_2f_85_gripper_visualization \
   robotiq_2f_gripper_control \
   ur_robot_driver \
   ur3_dual_moveit_config \
-  dual_arm_tasks
+  dual_arm_tasks \
+  ur3_graspnet6dof_20260824
 
 echo
 echo "Restore complete. Run: source $repo_root/devel/setup.bash"

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img" aria-labelledby="title desc">
+  <title id="title">眼在手外手眼标定安装关系</title>
+  <desc id="desc">固定 RealSense 相机观察刚性安装在机械臂末端的 ChArUco 标定板。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7fbff"/>
+      <stop offset="1" stop-color="#eef4fa"/>
+    </linearGradient>
+    <linearGradient id="camera" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#334155"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+    <marker id="arrow-blue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#ea580c"/>
+    </marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="7" flood-color="#0f172a" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="650" rx="26" fill="url(#bg)"/>
+  <text x="60" y="65" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="34" font-weight="700" fill="#0f172a">眼在手外（Eye-to-hand / Eye-on-base）</text>
+  <text x="60" y="102" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" fill="#475569">相机固定，机械臂带着标定板在多个位置和姿态之间运动</text>
+
+  <!-- Fixed camera and stand -->
+  <g filter="url(#shadow)">
+    <rect x="90" y="160" width="245" height="110" rx="20" fill="url(#camera)"/>
+    <circle cx="150" cy="215" r="33" fill="#020617" stroke="#60a5fa" stroke-width="7"/>
+    <circle cx="150" cy="215" r="13" fill="#93c5fd"/>
+    <circle cx="250" cy="200" r="12" fill="#111827" stroke="#64748b" stroke-width="4"/>
+    <circle cx="286" cy="200" r="12" fill="#111827" stroke="#64748b" stroke-width="4"/>
+    <rect x="190" y="270" width="42" height="205" rx="12" fill="#64748b"/>
+    <rect x="105" y="460" width="215" height="34" rx="12" fill="#475569"/>
+  </g>
+  <text x="87" y="535" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="23" font-weight="700" fill="#0f172a">固定 RealSense</text>
+  <text x="87" y="568" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" fill="#475569">C = camera_color_optical_frame</text>
+
+  <!-- Camera viewing rays -->
+  <path d="M170 225 L780 322" stroke="#60a5fa" stroke-width="4" stroke-dasharray="12 10" opacity="0.85"/>
+  <path d="M170 225 L780 515" stroke="#60a5fa" stroke-width="4" stroke-dasharray="12 10" opacity="0.85"/>
+  <path d="M198 238 L635 386" stroke="#2563eb" stroke-width="5" marker-end="url(#arrow-blue)"/>
+  <text x="350" y="285" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="700" fill="#1d4ed8">观测 C → Tᵢ</text>
+
+  <!-- Robot base -->
+  <g filter="url(#shadow)">
+    <ellipse cx="980" cy="550" rx="135" ry="35" fill="#64748b"/>
+    <rect x="890" y="465" width="180" height="85" rx="24" fill="#94a3b8"/>
+    <circle cx="975" cy="465" r="51" fill="#2563eb" stroke="#1e3a8a" stroke-width="8"/>
+    <path d="M975 448 L890 355" stroke="#60a5fa" stroke-width="56" stroke-linecap="round"/>
+    <circle cx="890" cy="355" r="43" fill="#2563eb" stroke="#1e3a8a" stroke-width="7"/>
+    <path d="M870 340 L755 405" stroke="#60a5fa" stroke-width="48" stroke-linecap="round"/>
+    <circle cx="755" cy="405" r="36" fill="#2563eb" stroke="#1e3a8a" stroke-width="7"/>
+    <path d="M738 392 L681 355" stroke="#cbd5e1" stroke-width="36" stroke-linecap="round"/>
+  </g>
+  <text x="920" y="612" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="700" fill="#0f172a">B = right_arm_base</text>
+
+  <!-- ChArUco board -->
+  <g transform="translate(625 285) rotate(-10)" filter="url(#shadow)">
+    <rect x="0" y="0" width="175" height="245" rx="5" fill="#fff" stroke="#0f172a" stroke-width="5"/>
+    <g fill="#111827">
+      <rect x="15" y="18" width="36" height="36"/><rect x="87" y="18" width="36" height="36"/><rect x="15" y="90" width="36" height="36"/><rect x="87" y="90" width="36" height="36"/><rect x="15" y="162" width="36" height="36"/><rect x="87" y="162" width="36" height="36"/>
+      <rect x="51" y="54" width="36" height="36"/><rect x="123" y="54" width="36" height="36"/><rect x="51" y="126" width="36" height="36"/><rect x="123" y="126" width="36" height="36"/><rect x="51" y="198" width="36" height="30"/><rect x="123" y="198" width="36" height="30"/>
+    </g>
+    <g fill="#fff">
+      <rect x="22" y="25" width="7" height="7"/><rect x="35" y="37" width="8" height="8"/><rect x="94" y="26" width="8" height="8"/><rect x="106" y="39" width="8" height="8"/>
+      <rect x="58" y="62" width="8" height="8"/><rect x="72" y="75" width="7" height="7"/><rect x="130" y="62" width="8" height="8"/><rect x="143" y="75" width="8" height="8"/>
+      <rect x="23" y="98" width="8" height="8"/><rect x="36" y="111" width="7" height="7"/><rect x="95" y="98" width="7" height="7"/><rect x="108" y="111" width="8" height="8"/>
+    </g>
+  </g>
+  <text x="600" y="570" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="700" fill="#0f172a">T = handeye_target</text>
+  <text x="600" y="600" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" fill="#475569">标定板刚性固定在末端 E</text>
+
+  <!-- Tool transform and motion ghosts -->
+  <path d="M940 410 C875 345 842 322 792 337" fill="none" stroke="#ea580c" stroke-width="5" marker-end="url(#arrow-orange)"/>
+  <text x="835" y="315" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="700" fill="#c2410c">B → Eᵢ</text>
+  <g opacity="0.25" transform="translate(80 -80) rotate(14 710 405)">
+    <rect x="625" y="285" width="175" height="245" rx="5" fill="#f97316" stroke="#c2410c" stroke-width="5"/>
+  </g>
+  <g opacity="0.18" transform="translate(-70 20) rotate(-18 710 405)">
+    <rect x="625" y="285" width="175" height="245" rx="5" fill="#f97316" stroke="#c2410c" stroke-width="5"/>
+  </g>
+  <path d="M830 205 C900 235 890 300 828 330" fill="none" stroke="#ea580c" stroke-width="4" stroke-dasharray="10 9" marker-end="url(#arrow-orange)"/>
+  <text x="905" y="250" font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" fill="#9a3412">多位置、多角度采样</text>
+</svg>

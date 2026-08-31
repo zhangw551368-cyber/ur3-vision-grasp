@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="config" default="$(find ur3_graspnet6dof_20260824)/config/right_arm_green_table.yaml"/>
+  <arg name="mode" default="pick_hold"/>
+  <arg name="network_rank" default="-1"/>
+  <!-- This launch has no execution argument and is structurally plan-only. -->
+  <node pkg="ur3_graspnet6dof_20260824"
+        type="graspnet_pick_executor.py"
+        name="ur3_graspnet6d_plan_once"
+        output="screen"
+        required="true"
+        args="--config $(arg config) --mode $(arg mode) --network-rank $(arg network_rank)"/>
+</launch>

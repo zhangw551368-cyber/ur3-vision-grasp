@@ -22,11 +22,17 @@ sudo apt install -y \
   ros-noetic-desktop-full \
   ros-noetic-moveit \
   ros-noetic-realsense2-camera \
+  ros-noetic-universal-robots \
+  ros-noetic-ur-client-library \
   python3-rosdep \
   python3-catkin-tools \
   python3-opencv \
   python3-numpy \
-  python3-yaml
+  python3-yaml \
+  python3-pymodbus \
+  socat \
+  iputils-ping \
+  network-manager
 ```
 
 随后从仓库根目录解析其余 ROS 依赖：
@@ -40,6 +46,10 @@ rosdep install --from-paths src --ignore-src -r -y
 
 仓库已包含当前使用的 `ur_robot_driver`、`ur_description`、`ur3_dual_moveit_config` 和 `robotiq` 源码。系统中的同名 Debian 包会被当前工作空间 overlay 覆盖。
 
+新电脑完整操作顺序见 [`docs/NEW_PC_DEPLOYMENT_20260831_zh.md`](../docs/NEW_PC_DEPLOYMENT_20260831_zh.md)。
+
+> 2026 年注意：ROS Noetic 已结束官方生命周期，新的 rosdistro 索引可能不再给 `moveit_commander`、`realsense2_camera`、`aruco_ros` 或 `easy_handeye` 返回 rosdep 规则。因此恢复脚本会先尝试 rosdep，再以本节明确列出的 Noetic 软件包和实际 catkin 构建结果为准。
+
 ## 非软件依赖
 
 - 两台 UR3 与相应 External Control/URCap 配置；
@@ -50,4 +60,3 @@ rosdep install --from-paths src --ignore-src -r -y
 - 操作者现场安全确认与急停访问能力。
 
 真实设备标识保留在启动文件和文档中，因此仓库应默认设为 Private。
-
