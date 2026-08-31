@@ -20,6 +20,37 @@ bash scripts/start_real_workcell.sh
 
 - [`docs/NEW_PC_DEPLOYMENT_20260831_zh.md`](docs/NEW_PC_DEPLOYMENT_20260831_zh.md)
 
+### 默认硬件配置
+
+新电脑连接前先检查 [`config/lab_hardware.env`](config/lab_hardware.env)。仓库当前默认值对应实验室现有设备：
+
+| 设备 | 默认地址或设备路径 |
+|---|---|
+| 控制电脑有线网卡 | `192.168.1.41/24` |
+| 左 UR3 | `192.168.1.43` |
+| 右 UR3 | `192.168.1.44` |
+| 右 Robotiq USB-RS485 | `/dev/serial/by-id/usb-FTDI_USB_TO_RS-485_DA6ACQ6P-if00-port0` |
+
+如果另一台电脑使用不同网段、网卡地址或 USB-RS485 设备路径，只修改该配置文件，不需要修改 launch 和源码。左右 UR3 示教器中的 External Control 主机地址必须与控制电脑有线网卡地址一致。
+
+### 自动建立的实机碰撞空间
+
+`scripts/start_real_workcell.sh` 会通过 [`right_arm_real_environment_20260824.yaml`](src/dual_arm_tasks/config/right_arm_real_environment_20260824.yaml) 自动向 MoveIt PlanningScene 加入：
+
+| 碰撞物体 | 尺寸（m） | 中心坐标（base，m） |
+|---|---:|---:|
+| 实机支撑机柜 `right_arm_lab_20260824__support_cabinet` | `0.980 × 2.760 × 0.795` | `[-0.3375, -0.3530, -0.4075]` |
+| 绿色桌面 `right_arm_lab_20260824__green_cloth_work_surface` | `1.200 × 0.900 × 0.020` | `[0.780, -0.340, -0.020]` |
+
+启动终端保持运行后，可在另一个终端执行只读验证：
+
+```bash
+cd ur3-vision-grasp
+bash scripts/verify_running_workcell.sh
+```
+
+验证通过时会显示 `REAL WORKCELL READ-ONLY VERIFICATION PASSED`。该检查确认右臂关节状态、UR Dashboard、MoveIt PlanningScene、机柜、桌面和相机 TF，不会发送运动命令。
+
 ## 2026-08-31 真机执行归档
 
 从新手眼标定运行文件到最终真机抓取的完整终端命令、中文说明、执行入口和关键源码快照，已经汇总到：
